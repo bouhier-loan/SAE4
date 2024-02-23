@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const groupSchema = new mongoose.Schema({
-    id: {
-        type: String,
-        required: true
-    },
     users: {
         type: Array,
         required: true

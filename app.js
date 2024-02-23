@@ -1,34 +1,32 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express')
+const mongoose = require('mongoose')
+const cors = require('cors')
+require('dotenv').config()
 
-var usersRouter = require('./routes/users');
+console.log("Connecting to database")
+mongoose.connect(process.env.DATABASE_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+console.log("Connected to database")
 
-var app = express();
+const apiRoutes = require('./routes/routes')
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// const publicRoutes = require('./routes/public')
 
-app.use('/users', usersRouter);
+app = express()
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+app.use(express.json())
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+//app.use('/public', cors())
+//app.use('/public', publicRoutes)
 
-  // render the error page
-  res.status(err.status || 500);
-});
+console.log("Setting up routes")
+app.use('/api', cors({
+  credentials: true,
+  origin: ['http://localhost:8000','http://127.0.0.1:8000'] // Add the frontend url here
+}))
+app.use('/api', apiRoutes)
 
-module.exports = app;
+app.listen(8000)
+console.log('Server started')
