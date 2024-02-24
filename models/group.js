@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const groupSchema = new mongoose.Schema({
-    users: {
+    participants: {
         type: Array,
         required: true
     },

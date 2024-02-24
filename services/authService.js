@@ -1,33 +1,50 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const {v4: uuidv4} = require('uuid');
 
 const User = require('../models/User');
 const AccessToken = require('../models/AccessToken');
 
+/* Shift the date by a number of seconds
+ * @param {Number} seconds - The number of seconds to shift the date by
+ * @returns {Date} - The shifted date
+ */
+Date.prototype.shift = function(seconds) {
+    this.setTime(this.getTime() + (seconds*1000));
+    return this;
+}
+
 /* Register the user
  * @param {Object} req - The request object
  * @param {Object} res - The response object
- * @returns {Object} - The user if the registration is successful, otherwise an error message
+ * @returns {Object} - The response object
  */
 async function register(req, res) {
+    /* Check if the request is valid */
+    if (!req.body.username || !req.body.password) {
+        console.log(req.body);
+        return res.status(400).send(
+            {message: 'Invalid request'}
+        );
+    };
+
     /* Check if the user already exists */
     let isUser = await User.findOne({ username: req.body.username });
     if (isUser) {
-        res.status(400).send(
+        return res.status(400).send(
             {message: 'User already exists'}
         );
     };
 
     /* Check if the password is valid */
     if (req.body.password.length < 8) {
-        res.status(400).send(
+        return res.status(400).send(
             {message: 'Password must be at least 8 characters'}
         );
     };
 
     /* Check if the username is valid */
     if (req.body.username.length < 4 || req.body.username.length > 20) {
-        res.status(400).send(
+        return res.status(400).send(
             {message: 'Username must be at least 4 characters and at most 20 characters'}
         );
     };
@@ -39,6 +56,7 @@ async function register(req, res) {
 
     /* Create the user */
     const user = new User({
+        id: uuidv4(),
         username: req.body.username,
         password: hash
     });
@@ -47,79 +65,93 @@ async function register(req, res) {
     const savedUser = await user.save();
 
     /* Send the user back */
-    const { password, ...userWithoutPassword } = savedUser.toObject();
-    res.status(201).send(userWithoutPassword);
+    const { password, _id, __v, ...userWithoutPassword } = savedUser.toObject();
+    return res.status(201).send(
+        {
+            message: 'User registered successfully',
+            user: userWithoutPassword
+        }
+    );
 };
 
 
 /* Login the user
  * @param {Object} req - The request object
  * @param {Object} res - The response object
- * @returns {String} - The token if the login is successful, otherwise an error message
+ * @returns {Object} - The response object
  */
 async function login(req, res) {
+    /* Check if the request is valid */
+    if (!req.body.username || !req.body.password) {
+        return res.status(400).send(
+            {message: 'Invalid request'}
+        );
+    };
+
     /* Check if the user exists */
     const user = await User.findOne({username: req.body.username});
     if (!user) {
-        res.status(400).send(
+        return res.status(400).send(
             {message: 'User does not exist'}
         );
-    }
-    ;
+    };
 
     /* Check if the password is correct */
     const validPassword = await bcrypt.compare(req.body.password, user.password);
     if (!validPassword) {
-        res.status(400).send(
+        return res.status(400).send(
             {message: 'Invalid credentials'}
         );
-    }
-    ;
+    };
 
     /* Check if the user already has a token and delete it */
-    let token = await AccessToken.findOne({userId: user._id});
+    let token = await AccessToken.findOne({userId: user.id});
     if (token) {
-        await AccessToken.deleteOne({userId: user._id});
-    }
-    ;
+        await AccessToken.deleteOne({userId: user.id});
+    };
 
     /* Create and assign a token */
-    token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET);
+    token = uuidv4();
     const accessToken = new AccessToken({
-        userId: user._id,
+        userId: user.id,
         token: token,
-        expires: Date.now() + 3600000 // 1 hour
+        expires: new Date().shift(process.env.TOKEN_VALIDITY)
     });
 
     /* Save the token */
     const savedToken = await accessToken.save();
 
     /* Send the token back */
-    res.status(200).send(token.token);
+    return res.status(200).send(
+        {
+            message: 'Login successful',
+            token: token
+        }
+    );
 }
 
-/*
- * Refresh the token
- * @param {Object} token - The token to refresh
+/* Refresh the token
+ * @param {String} token - The token to refresh
+ * @param {String} userId - The user id
  * @returns {String} - The new token or null if the token does not exist or is expired
  */
-async function refreshToken(token) {
+async function refreshToken(token, userId) {
     /* Check if the token exists */
-    const accessToken = await AccessToken.findOne({token: token.token, userId: token.userId});
+    const accessToken = await AccessToken.findOne({token: token, userId: userId});
     if (!accessToken) {
         return null;
     }
 
     /* Check if the token is expired */
     if (accessToken.expires < Date.now()) {
-        await AccessToken.deleteOne({token: token.token, userId: token.userId});
+        await AccessToken.deleteOne({token: token, userId: userId});
         return null;
     }
 
     /* Create and assign a new token */
-    const newToken = jwt.sign({_id: token.userId}, process.env.TOKEN_SECRET);
+    const newToken = uuidv4();
     accessToken.token = newToken;
-    accessToken.expires = Date.now() + 3600000; // 1 hour
+    accessToken.expires = new Date().shift(process.env.TOKEN_VALIDITY)
 
     /* Save the token */
     const savedToken = await accessToken.save();
