@@ -1,15 +1,15 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
 const groupSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true
+    },
     ownerId: {
         type: String,
         required: true
     },
     participants: {
-        type: Array,
-        required: true
-    },
-    messages: {
         type: Array,
         required: true
     },
@@ -24,4 +24,4 @@ const groupSchema = new mongoose.Schema({
     }
 })
 
-export default mongoose.model('Group', groupSchema);
+module.exports = mongoose.model('Group', groupSchema);

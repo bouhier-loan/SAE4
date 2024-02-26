@@ -22,7 +22,7 @@ async function register(req, res) {
     /* Check if the request is valid */
     if (!req.body.username || !req.body.password) {
         console.log(req.body);
-        return res.status(400).send(
+        return res.status(400).json(
             {message: 'Invalid request'}
         );
     };
@@ -30,21 +30,21 @@ async function register(req, res) {
     /* Check if the user already exists */
     let isUser = await User.findOne({ username: req.body.username });
     if (isUser) {
-        return res.status(400).send(
+        return res.status(400).json(
             {message: 'User already exists'}
         );
     };
 
     /* Check if the password is valid */
     if (req.body.password.length < 8) {
-        return res.status(400).send(
+        return res.status(400).json(
             {message: 'Password must be at least 8 characters'}
         );
     };
 
     /* Check if the username is valid */
     if (req.body.username.length < 4 || req.body.username.length > 20) {
-        return res.status(400).send(
+        return res.status(400).json(
             {message: 'Username must be at least 4 characters and at most 20 characters'}
         );
     };
@@ -58,6 +58,7 @@ async function register(req, res) {
     const user = new User({
         id: uuidv4(),
         username: req.body.username,
+        displayName: req.body.username,
         password: hash
     });
 
@@ -66,7 +67,7 @@ async function register(req, res) {
 
     /* Send the user back */
     const { password, _id, __v, ...userWithoutPassword } = savedUser.toObject();
-    return res.status(201).send(
+    return res.status(201).json(
         {
             message: 'User registered successfully',
             user: userWithoutPassword
@@ -83,7 +84,7 @@ async function register(req, res) {
 async function login(req, res) {
     /* Check if the request is valid */
     if (!req.body.username || !req.body.password) {
-        return res.status(400).send(
+        return res.status(400).json(
             {message: 'Invalid request'}
         );
     };
@@ -91,7 +92,7 @@ async function login(req, res) {
     /* Check if the user exists */
     const user = await User.findOne({username: req.body.username});
     if (!user) {
-        return res.status(400).send(
+        return res.status(400).json(
             {message: 'User does not exist'}
         );
     };
@@ -99,7 +100,7 @@ async function login(req, res) {
     /* Check if the password is correct */
     const validPassword = await bcrypt.compare(req.body.password, user.password);
     if (!validPassword) {
-        return res.status(400).send(
+        return res.status(400).json(
             {message: 'Invalid credentials'}
         );
     };
@@ -119,12 +120,13 @@ async function login(req, res) {
     });
 
     /* Save the token */
-    const savedToken = await accessToken.save();
+    await accessToken.save();
 
     /* Send the token back */
-    return res.status(200).send(
+    return res.status(200).json(
         {
             message: 'Login successful',
+            userId: user.id,
             token: token
         }
     );
@@ -154,15 +156,38 @@ async function refreshToken(token, userId) {
     accessToken.expires = new Date().shift(process.env.TOKEN_VALIDITY)
 
     /* Save the token */
-    const savedToken = await accessToken.save();
+    await accessToken.save();
 
     /* Send the token back */
     return newToken;
 }
 
+/* Logout the user
+ * @param {String} token - The token to logout
+ * @param {String} userId - The user id
+ * @returns {Object} - The response object
+ */
+async function logout(token, userId) {
+    /* Check if the token exists */
+    const accessToken = await AccessToken.findOne({token: token, userId: userId});
+    if (!accessToken) {
+        return res.status(400).json(
+            {message: 'Invalid token'}
+        );
+    }
+
+    /* Delete the token */
+    await AccessToken.deleteOne({token: token, userId: userId});
+
+    /* Send the response back */
+    return res.status(200).json(
+        {message: 'Logout successful'}
+    );
+}
 
 module.exports = {
     register,
     login,
-    refreshToken
+    refreshToken,
+    logout
 };

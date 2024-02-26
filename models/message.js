@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true
+    },
     senderId: {
         type: String,
         required: true
@@ -11,6 +15,10 @@ const messageSchema = new mongoose.Schema({
             required: true
         }
         // Attachments, etc.
+    },
+    conversationId: {
+        type: String,
+        required: true
     },
     date: {
         type: Date,

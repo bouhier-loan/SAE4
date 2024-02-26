@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 
 const conversationSchema = new mongoose.Schema({
-    participants: {
-        type: Array,
+    id: {
+        type: String,
         required: true
     },
-    messages: {
+    participants: {
         type: Array,
         required: true
     },
