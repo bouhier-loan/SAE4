@@ -1,6 +1,6 @@
 const authService = require('./authService');
-const User = require('../models/User');
-const Conversation = require('../models/Conversation');
+const User = require('../models/user');
+const Conversation = require('../models/conversation');
 
 /* Create a new conversation
  * @param {Object} req - The request object

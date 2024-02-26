@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs');
 const {v4: uuidv4} = require('uuid');
 
-const User = require('../models/User');
-const AccessToken = require('../models/AccessToken');
+const User = require('../models/user');
+const AccessToken = require('../models/accessToken');
 
 /* Shift the date by a number of seconds
  * @param {Number} seconds - The number of seconds to shift the date by

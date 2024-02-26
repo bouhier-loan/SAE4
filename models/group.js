@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const groupSchema = new mongoose.Schema({
+    ownerId: {
+        type: String,
+        required: true
+    },
     participants: {
         type: Array,
         required: true
