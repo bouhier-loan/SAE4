@@ -111,14 +111,14 @@ async function createToken(req, res) {
 
 /* Check if the token is valid
  * @param {Object} req - The request object
+ * @param {String} req.params.id - The user's id
  * @param {String} req.body.token - The token to check
- * @param {String} req.body.userId - The user id
  * @param {Object} res - The response object
  * @returns {Object} - The response object
  */
 async function checkToken(req, res) {
     /* Check if the request is valid */
-    if (!req.body.token || !req.body.userId) {
+    if (!req.body.token) {
         return res.status(400).json(
             {message: 'Invalid request'}
         );
@@ -126,7 +126,7 @@ async function checkToken(req, res) {
     
 
     /* Check if the token exists */
-    const accessToken = await AccessToken.findOne({token: req.body.token, userId: req.body.userId});
+    const accessToken = await AccessToken.findOne({token: req.body.token, userId: req.params.id});
     if (!accessToken) {
         return res.status(400).json(
             {message: 'Invalid token'}
@@ -135,7 +135,7 @@ async function checkToken(req, res) {
 
     /* Check if the token is expired */
     if (accessToken.expires < Date.now()) {
-        await AccessToken.deleteOne({token: req.body.token, userId: req.body.userId});
+        await AccessToken.deleteOne({token: req.body.token, userId: req.params.id});
         return res.status(400).json(
             {message: 'Token expired'}
         );

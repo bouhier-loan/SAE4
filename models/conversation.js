@@ -5,6 +5,10 @@ const conversationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    ownerId: {
+        type: String,
+        required: true
+    },
     participants: {
         type: Array,
         required: true
@@ -13,6 +17,10 @@ const conversationSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
+    },
+    name: {
+        type: String,
+        required: true
     }
 })
 
