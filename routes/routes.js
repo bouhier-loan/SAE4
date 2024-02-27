@@ -10,6 +10,7 @@ const userService = require('../services/userService');
 router.post('/register',async (req, res) =>  authService.register(req, res));
 router.post('/login', async (req, res) => authService.login(req, res));
 router.post('/logout', async (req, res) => authService.logout(req, res));
+router.post('/auth/checkToken', async (req, res) => authService.checkToken(req, res));
 
 /* Conversations */
 router.post('/conversations', async (req, res) => conversationService.createConversation(req, res));

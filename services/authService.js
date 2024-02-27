@@ -185,9 +185,49 @@ async function logout(token, userId) {
     );
 }
 
+/* Check if the token is valid
+ * @param {Object} req - The request object
+ * @param {String} req.body.token - The token to check
+ * @param {String} req.body.userId - The user id
+ * @param {Object} res - The response object
+ * @returns {Object} - The response object
+ */
+async function checkToken(req, res) {
+    /* Check if the request is valid */
+    if (!req.body.token || !req.body.userId) {
+        return res.status(400).json(
+            {message: 'Invalid request'}
+        );
+    }
+    ;
+
+    /* Check if the token exists */
+    const accessToken = await AccessToken.findOne({token: req.body.token, userId: req.body.userId});
+    if (!accessToken) {
+        return res.status(400).json(
+            {message: 'Invalid token'}
+        );
+    }
+
+    /* Check if the token is expired */
+    if (accessToken.expires < Date.now()) {
+        await AccessToken.deleteOne({token: req.body.token, userId: req.body.userId});
+        return res.status(400).json(
+            {message: 'Token expired'}
+        );
+    }
+
+    /* Send the response back */
+    return res.status(200).json(
+        {message: 'Token valid'}
+    );
+}
+
+
 module.exports = {
     register,
     login,
     refreshToken,
-    logout
+    logout,
+    checkToken
 };
