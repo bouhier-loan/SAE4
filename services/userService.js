@@ -79,10 +79,26 @@ async function createUser(req, res) {
 /* Create a token for the user
  * @param {Object} req - The request object
  * @param {String} req.params.id - The user's id
+ * @param {String} req.body.password - The user's password
  * @param {Object} res - The response object
  * @returns {Object} - The response object
  */
 async function createToken(req, res) {
+    /* Check if the request is valid */
+    if (!req.body.password) {
+        return res.status(400).json(
+            {message: 'Invalid request'}
+        );
+    }
+
+    /* Check if the password is correct */
+    const user = await User.findOne({id: req.params.id});
+    if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+        return res.status(400).json(
+            {message: 'Invalid password'}
+        );
+    }
+
     /* If the user already has a token, delete it */
     await AccessToken.deleteMany({userId:req.params.id});
 

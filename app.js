@@ -20,7 +20,7 @@ console.log("Setting up user routes")
 userapp.use('/', cors())
 userapp.use('/', userRoutes)
 
-userapp.listen(8001)
+userapp.listen(process.env.USER_SERVICE_PORT || 3000)
 console.log('User server started')
 
 /* Message routes */
@@ -34,5 +34,5 @@ console.log("Setting up message routes")
 messageapp.use('/', cors())
 messageapp.use('/', messageRoutes)
 
-messageapp.listen(8002)
+messageapp.listen(process.env.MESSAGE_SERVICE_PORT || 3001)
 console.log('Message server started')
