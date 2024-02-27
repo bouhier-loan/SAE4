@@ -9,23 +9,16 @@ mongoose.connect(process.env.DATABASE_URL, {
 })
 console.log("Connected to database")
 
-const apiRoutes = require('./routes/routes')
+const userRoutes = require('./routes/userRoutes')
 
-// const publicRoutes = require('./routes/public')
+userapp = express()
+userapp.use(express.json())
 
-app = express()
+console.log("Setting up user routes")
+userapp.use('/', cors())
+userapp.use('/', userRoutes)
 
-app.use(express.json())
+userapp.listen(8001)
+console.log('User server started')
 
-//app.use('/public', cors())
-//app.use('/public', publicRoutes)
-
-console.log("Setting up routes")
-app.use('/api', cors({
-  credentials: true,
-  origin: ['http://localhost:8000','http://127.0.0.1:8000'] // Add the frontend url here
-}))
-app.use('/api', apiRoutes)
-
-app.listen(8000)
-console.log('Server started')
+// TODO: Add a route for the messages service
