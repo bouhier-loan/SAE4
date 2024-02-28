@@ -16,6 +16,7 @@ Date.prototype.shift = function(seconds) {
  * @param {Object} req - The request object
  * @param {String} req.body.username - The user's username
  * @param {String} req.body.password - The user's password
+ * @param {String} req.body.displayName - The user's display name (optional)
  * @param {Object} res - The response object
  * @returns {Object} - The response object
  */
@@ -50,6 +51,13 @@ async function createUser(req, res) {
         );
     }
 
+    /* Check if the display name is valid */
+    if (req.body.displayName && (req.body.displayName.length < 4 || req.body.displayName.length > 20)) {
+        return res.status(400).json(
+            {message: 'Display name must be at least 4 characters and at most 20 characters'}
+        );
+    }
+
     /* Encrypt the password */
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(req.body.password, salt);
@@ -59,7 +67,7 @@ async function createUser(req, res) {
     const user = new User({
         id: uuidv4(),
         username: req.body.username,
-        displayName: req.body.username,
+        displayName: req.body.displayName || req.body.username,
         password: hash
     });
 
@@ -91,14 +99,6 @@ async function createToken(req, res) {
         );
     }
 
-    /* Check if the password is correct */
-    const user = await User.findOne({id: req.params.id});
-    if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
-        return res.status(400).json(
-            {message: 'Invalid password'}
-        );
-    }
-
     /* If the user already has a token, delete it */
     await AccessToken.deleteMany({userId:req.params.id});
 
@@ -122,6 +122,26 @@ async function createToken(req, res) {
             message: 'Token created successfully',
             token: token
         }
+    );
+}
+
+/* Check if the password is valid
+    * @param {Object} req - The request object
+    * @param {String} req.params.id - The user's id
+    * @param {String} req.body.password - The user's password
+    * @param {Object} res - The response object
+    * @returns {Object} - The response object
+ */
+async function checkPassword(req, res) {
+    /* Check if the password is correct */
+    const user = await User.findOne({id: req.params.id});
+    if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+        return res.status(400).json(
+            {message: 'Invalid password'}
+        );
+    }
+    return res.status(200).json(
+        {message: 'Password valid'}
     );
 }
 
@@ -204,6 +224,11 @@ async function getAllUsers(req, res) {
     /* Get all users */
     let users = await User.find({});
 
+    /* Check if there is a filter */
+    if (req.query.username) {
+        users = users.filter(user => user.username.includes(req.query.username));
+    }
+
     /* Remove sensitive information */
     users = users.map(user => {
         return {
@@ -275,5 +300,6 @@ module.exports = {
     updateUser,
     createUser,
     createToken,
-    checkToken
+    checkToken,
+    checkPassword
 }

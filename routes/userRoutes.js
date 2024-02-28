@@ -9,5 +9,6 @@ router.get('/users/:id', async (req, res) => userService.getUserInfo(req, res));
 router.put('/users/:id', async (req, res) => userService.updateUser(req, res));
 router.post('/users/:id/token', async (req, res) => userService.createToken(req, res));
 router.get('/users/:id/token', async (req, res) => userService.checkToken(req, res));
+router.get('/users/:id/password', async (req, res) => userService.checkPassword(req, res));
 
 module.exports = router;
