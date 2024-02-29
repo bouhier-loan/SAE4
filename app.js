@@ -36,3 +36,17 @@ messageapp.use('/', messageRoutes)
 
 messageapp.listen(process.env.MESSAGE_SERVICE_PORT || 3001)
 console.log('Message server started')
+
+/* Proxy routes */
+const swaggerUi = require('swagger-ui-express')
+const swaggerJson = require('./swagger.json')
+
+proxyapp = express()
+proxyapp.use(express.json())
+
+console.log("Setting up message routes")
+proxyapp.use('/', cors())
+proxyapp.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerJson))
+
+proxyapp.listen(process.env.MESSAGE_SERVICE_PORT || 8000)
+console.log('Message server started')
