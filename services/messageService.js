@@ -304,12 +304,18 @@ async function deleteConversation(req, res) {
 
 /* Get all the conversations
  * @param {Object} req - The request object
+ * @param {String} req.query.userId - The user's id (optional)
  * @param {Object} res - The response object
  * @return {Object} - The response object
  */
 async function getConversations(req, res) {
     /* Get all the conversations */
     let conversations = await Conversation.find();
+
+    /* If the user's id is provided, filter the conversations */
+    if (req.query.userId) {
+        conversations = conversations.filter(conversation => conversation.participants.includes(req.query.userId));
+    }
 
     /* Remove _id and __v from the conversations */
     let conversationsWithoutIdAndV = conversations.map(conversation => {
@@ -349,30 +355,6 @@ async function getConversation(req, res) {
     return res.status(200).json(
         {
             conversation: conversationWithoutIdAndV,
-        }
-    );
-}
-
-/* Get a user's conversations
- * @param {Object} req - The request object
- * @param {String} req.params.id - The user's id
- * @param {Object} res - The response object
- * @return {Object} - The response object
- */
-async function getUserConversations(req, res) {
-    /* Get the user's conversations */
-    let conversations = await Conversation.find({participants: req.params.id});
-
-    /* Remove _id and __v from the conversations */
-    let conversationsWithoutIdAndV = conversations.map(conversation => {
-        let {_id, __v, ...conversationWithoutIdAndV} = conversation.toJSON();
-        return conversationWithoutIdAndV;
-    });
-
-    /* Send the response */
-    return res.status(200).json(
-        {
-            conversations: conversationsWithoutIdAndV,
         }
     );
 }
@@ -525,7 +507,6 @@ module.exports = {
     deleteConversation,
     getConversations,
     getConversation,
-    getUserConversations,
     addParticipant,
     removeParticipant,
     getConversationMessages,
