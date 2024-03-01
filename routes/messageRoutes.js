@@ -20,6 +20,5 @@ router.put('/conversations/:id', async (req, res) => { await messageService.upda
 router.post('/conversations/:id/participants', async (req, res) => { await messageService.addParticipant(req, res) });
 router.delete('/conversations/:id/participants/:participantId', async (req, res) => { await messageService.removeParticipant(req, res) });
 router.get('/conversations/:id/participants', async (req, res) => { await messageService.getParticipants(req, res) });
-router.get('/conversations/user/:userId', async (req, res) => { await messageService.getUserConversations(req, res) });
 
 module.exports = router;
