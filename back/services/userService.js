@@ -135,7 +135,14 @@ async function createToken(req, res) {
 async function checkPassword(req, res) {
     /* Check if the password is correct */
     const user = await User.findOne({id: req.params.id});
-    if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+
+    if (!user ) {
+        return res.status(404).json(
+            {message: 'User not found'}
+        );
+    }
+
+    if (!(await bcrypt.compare(req.body.password, user.password))) {
         return res.status(400).json(
             {message: 'Invalid password'}
         );
@@ -222,12 +229,16 @@ async function getUserInfo(req, res) {
  */
 async function getAllUsers(req, res) {
     /* Get all users */
-    let users = await User.find({});
-
-    /* Check if there is a filter */
+    console.log("HEYOOOO")
+    let users;
     if (req.query.username) {
-        users = users.filter(user => user.username.includes(req.query.username));
+        users = await User.find({
+            username: req.query.username
+        });
+    } else {
+        users = await User.find({});
     }
+
 
     /* Remove sensitive information */
     users = users.map(user => {

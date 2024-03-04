@@ -15,7 +15,10 @@ async function login(req, res) {
         });
     }
 
+    console.log(JSON.stringify(req.body))
+
     /* Get the user */
+    console.info('Get the user')
     fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users?username=${req.body.username}`, {
         method: 'GET',
         headers: {
@@ -29,13 +32,17 @@ async function login(req, res) {
                 });
             }
             let user = data.users[0];
+            console.log('User found: ', JSON.stringify(user))
 
             /* Check if the password is correct */
+            console.info('Check if the password is correct')
             fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${user.id}/password`, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
-                }})
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(req.body)
+            })
                 .then(response => { return response.json() })
                 .then(data => {
                     if (data.message === 'Invalid password') {
@@ -43,6 +50,7 @@ async function login(req, res) {
                             message: 'Invalid password'
                         });
                     }
+                    console.info('Create a new token for the user')
                     fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${user.id}/token`, {
                         method: 'POST',
                         headers: {
@@ -56,27 +64,9 @@ async function login(req, res) {
                                 message: 'Login successful',
                                 token: data.token
                             });
-                        })
-                        .catch(error => {
-                            console.log(error);
-                            return res.status(500).send({
-                                message: 'Internal server error'
-                            });
                         });
-                })
-                .catch(error => {
-                    console.log(error);
-                    return res.status(500).send({
-                        message: 'Internal server error'
-                    });
                 });
-        })
-    .catch(error => {
-        console.log(error);
-        return res.status(500).send({
-            message: 'Internal server error'
         });
-    });
 }
 
 /* User registration
@@ -96,7 +86,7 @@ async function register(req, res) {
     }
 
     /* Create the user */
-    fetch('http://localhost:${process.env.USER_SERVICE_PORT}/users', {
+    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -106,12 +96,6 @@ async function register(req, res) {
         .then(response => { return response.json() })
         .then(data => {
             return res.status(data.status).send(data.body);
-        })
-        .catch(error => {
-            console.log(error);
-            return res.status(500).send({
-                message: 'Internal server error'
-            });
         });
 }
 
