@@ -1,35 +1,22 @@
 @import './base.css';
 
+* {
+  --Neutral-White: #FFFFFF;
+  --Neutral-10: #F6F8FC;
+  --Neutral-20: #F1F4F9;
+  --Neutral-30: #E2E8F0;
+  --Neutral-40: #CBD4E1;
+  --Neutral-50: #94A3B8;
+  --Neutral-60: #64748B;
+  --Neutral-70: #475569;
+  --Neutral-80: #27364B;
+  --Neutral-90: #1E2A3B;
+  --Neutral-100: #0F1A2A;
+}
+
 #app {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   font-weight: normal;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
 }

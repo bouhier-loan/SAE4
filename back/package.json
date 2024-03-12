@@ -19,6 +19,7 @@
     "pug": "2.0.0-beta11",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "yamljs": "^0.3.0"
   }
 }

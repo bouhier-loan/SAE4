@@ -1,0 +1,596 @@
+swagger: '2.0'
+info:
+  title: API du Service Utilisateur
+  description: API pour gérer les utilisateurs, leurs tokens et mots de passe.
+  version: '1.0.0'
+host: 'localhost:3000'
+schemes:
+  - http
+basePath: '/'
+
+paths:
+  /users:
+    post:
+      tags:
+        - Utilisateurs
+      summary: Inscrire un nouvel utilisateur
+      description: Cette route est utilisée pour inscrire un nouvel utilisateur.
+      operationId: registerUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          description: Détails de l'utilisateur à inscrire
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        '201':
+          description: Utilisateur inscrit avec succès
+          schema:
+            $ref: '#/definitions/User'
+
+    get:
+      tags:
+        - Utilisateurs
+      summary: Récupérer tous les utilisateurs
+      description: Cette route est utilisée pour récupérer tous les utilisateurs.
+      operationId: getAllUsers
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste de tous les utilisateurs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+
+  /users/{id}:
+    get:
+      tags:
+        - Utilisateurs
+      summary: Récupérer un utilisateur spécifique par son ID
+      description: Cette route est utilisée pour récupérer un utilisateur spécifique par son ID.
+      operationId: getUserById
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'utilisateur à récupérer
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Détails de l'utilisateur demandé
+          schema:
+            $ref: '#/definitions/User'
+
+    put:
+      tags:
+        - Utilisateurs
+      summary: Mettre à jour un utilisateur spécifique par son ID
+      description: Cette route est utilisée pour mettre à jour un utilisateur spécifique par son ID.
+      operationId: updateUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'utilisateur à mettre à jour
+          required: true
+          type: string
+        - in: body
+          name: user
+          description: Nouveaux détails de l'utilisateur
+          required: true
+          schema:
+            type: object
+            required:
+              - displayName
+              - password
+            properties:
+              displayName:
+                type: string
+              password:
+                type: string
+      responses:
+        '200':
+          description: Utilisateur mis à jour avec succès
+
+  /users/{id}/token:
+    post:
+      tags:
+        - Utilisateurs
+      summary: Créer un token pour un utilisateur spécifique par son ID
+      description: Cette route est utilisée pour créer un token pour un utilisateur spécifique par son ID.
+      operationId: createUserToken
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'utilisateur pour lequel créer un token
+          required: true
+          type: string
+        - in: body
+          name: user
+          description: Détails nécessaires pour créer un token
+          required: true
+          schema:
+            type: object
+            required:
+              - password
+            properties:
+              password:
+                type: string
+      responses:
+        '201':
+          description: Token créé avec succès
+
+    get:
+      tags:
+        - Utilisateurs
+      summary: Vérifier si un token est valide pour un utilisateur spécifique par son ID
+      description: Cette route est utilisée pour vérifier si un token est valide pour un utilisateur spécifique par son ID.
+      operationId: checkUserToken
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'utilisateur pour lequel vérifier le token
+          required: true
+          type: string
+        - in: body
+          name: token
+          description: Token à vérifier
+          required: true
+          schema:
+            type: object
+            required:
+              - token
+            properties:
+              token:
+                type: string
+      responses:
+        '200':
+          description: Token valide
+
+  /users/{id}/password:
+    get:
+      tags:
+        - Utilisateurs
+      summary: Vérifier si un mot de passe est valide pour un utilisateur spécifique par son ID
+      description: Cette route est utilisée pour vérifier si un mot de passe est valide pour un utilisateur spécifique par son ID.
+      operationId: checkUserPassword
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'utilisateur pour vérifier le mot de passe
+          required: true
+          type: string
+        - in: body
+          name: password
+          description: Mot de passe à vérifier
+          required: true
+          schema:
+            type: object
+            required:
+              - password
+            properties:
+              password:
+                type: string
+      responses:
+        '200':
+          description: Mot de passe valide
+
+
+  # Partie Message
+
+  /messages:
+    post:
+      tags:
+        - Messages
+      summary: Créer un nouveau message dans une conversation
+      description: Cette route est utilisée pour créer un nouveau message dans une conversation.
+      operationId: createMessage
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: message
+          description: Détails du message à créer
+          required: true
+          schema:
+            type: object
+            required:
+              - userId
+              - conversationId
+              - content
+            properties:
+              userId:
+                type: string
+              conversationId:
+                type: string
+              content:
+                type: object
+                properties:
+                  message:
+                    type: string
+      responses:
+        '200':
+          description: Message créé avec succès
+          schema:
+            $ref: '#/definitions/Message'
+
+    get:
+      tags:
+        - Messages
+      summary: Récupérer tous les messages
+      description: Cette route est utilisée pour récupérer tous les messages.
+      operationId: getAllMessages
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste de tous les messages
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Message'
+
+
+  /messages/{id}:
+    get:
+      tags:
+        - Messages
+      summary: Récupérer un message spécifique par son ID
+      description: Cette route est utilisée pour récupérer un message spécifique par son ID.
+      operationId: getMessageById
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID du message à récupérer
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Détails du message demandé
+          schema:
+            $ref: '#/definitions/Message'
+
+    delete:
+      tags:
+        - Messages
+      summary: Supprimer un message spécifique par son ID
+      description: Cette route est utilisée pour supprimer un message spécifique par son ID.
+      operationId: deleteMessage
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID du message à supprimer
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Message supprimé avec succès
+
+    put:
+      tags:
+        - Messages
+      summary: Mettre à jour un message spécifique par son ID
+      description: Cette route est utilisée pour mettre à jour un message spécifique par son ID.
+      operationId: updateMessage
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID du message à mettre à jour
+          required: true
+          type: string
+        - in: body
+          name: content
+          description: Nouveau contenu du message
+          required: true
+          schema:
+            type: object
+            properties:
+              content:
+                type: object
+                properties:
+                  message:
+                    type: string
+      responses:
+        '200':
+          description: Message mis à jour avec succès
+
+
+  /conversations:
+    get:
+      tags:
+        - Conversations
+      summary: Récupérer toutes les conversations
+      description: Cette route est utilisée pour récupérer toutes les conversations.
+      operationId: getAllConversations
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Liste de toutes les conversations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Conversation'
+
+    post:
+      tags:
+        - Conversations
+      summary: Créer une nouvelle conversation
+      description: Cette route est utilisée pour créer une nouvelle conversation.
+      operationId: createConversation
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: conversation
+          description: Détails de la conversation à créer
+          required: true
+          schema:
+            type: object
+            required:
+              - ownerId
+              - participants
+              - name
+            properties:
+              ownerId:
+                type: string
+              participants:
+                type: array
+                items:
+                  type: string
+              name:
+                type: string
+      responses:
+        '200':
+          description: Conversation créée avec succès
+          schema:
+            $ref: '#/definitions/Conversation'
+
+  /conversations/{id}:
+    get:
+      tags:
+        - Conversations
+      summary: Récupérer une conversation spécifique par son ID
+      description: Cette route est utilisée pour récupérer une conversation spécifique par son ID.
+      operationId: getConversationById
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de la conversation à récupérer
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Détails de la conversation demandée
+          schema:
+            $ref: '#/definitions/Conversation'
+
+    put:
+      tags:
+        - Conversations
+      summary: Mettre à jour une conversation spécifique par son ID
+      description: Cette route est utilisée pour mettre à jour une conversation spécifique par son ID.
+      operationId: updateConversation
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de la conversation à mettre à jour
+          required: true
+          type: string
+        - in: body
+          name: conversation
+          description: Nouveaux détails de la conversation
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+      responses:
+        '200':
+          description: Conversation mise à jour avec succès
+
+    delete:
+      tags:
+        - Conversations
+      summary: Supprimer une conversation spécifique par son ID
+      description: Cette route est utilisée pour supprimer une conversation spécifique par son ID.
+      operationId: deleteConversation
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de la conversation à supprimer
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Conversation supprimée avec succès
+
+  /conversations/{id}/messages:
+    get:
+      tags:
+        - Conversations
+      summary: Récupérer tous les messages d'une conversation spécifique par son ID
+      description: Cette route est utilisée pour récupérer tous les messages d'une conversation spécifique par son ID.
+      operationId: getMessagesByConversationId
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de la conversation dont il faut récupérer les messages
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Liste de tous les messages dans la conversation demandée
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Message'
+
+  /conversations/{id}/participants:
+    get:
+      tags:
+        - Conversations
+      summary: Récupérer tous les participants d'une conversation spécifique par son ID
+      description: Cette route est utilisée pour récupérer tous les participants d'une conversation spécifique par son ID.
+      operationId: getParticipantsByConversationId
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de la conversation dont il faut récupérer les participants
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Liste de tous les participants dans la conversation demandée
+          schema:
+            type: array
+            items:
+              type: string
+
+    post:
+      tags:
+        - Conversations
+      summary: Ajouter un participant à une conversation spécifique par son ID
+      description: Cette route est utilisée pour ajouter un participant à une conversation spécifique par son ID.
+      operationId: addParticipantToConversation
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de la conversation à laquelle ajouter un participant
+          required: true
+          type: string
+        - in: body
+          name: participant
+          description: ID du participant à ajouter
+          required: true
+          schema:
+            type: object
+            required:
+              - participantId
+            properties:
+              participantId:
+                type: string
+      responses:
+        '200':
+          description: Participant ajouté à la conversation avec succès
+
+  /conversations/{id}/participants/{participantId}:
+    delete:
+      tags:
+        - Conversations
+      summary: Retirer un participant d'une conversation spécifique par son ID
+      description: Cette route est utilisée pour retirer un participant d'une conversation spécifique par son ID.
+      operationId: removeParticipantFromConversation
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID de la conversation de laquelle retirer un participant
+          required: true
+          type: string
+        - name: participantId
+          in: path
+          description: ID du participant à retirer
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Participant retiré de la conversation avec succès
+
+
+definitions:
+
+  Message:
+    type: object
+    properties:
+      userId:
+        type: string
+      conversationId:
+        type: string
+      content:
+        type: object
+        properties:
+          message:
+            type: string
+
+  User:
+    type: object
+    properties:
+      username:
+        type: string
+      displayName:
+        type: string
+      password:
+        type: string
+
+
+
+  Conversation:
+    type: object
+    properties:
+      ownerId:
+        type: string
+      participants:
+        type: array
+        items:
+          type: string
+      name:
+        type: string

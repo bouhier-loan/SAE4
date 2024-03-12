@@ -39,17 +39,20 @@ console.log('Message server started on port', process.env.MESSAGE_SERVICE_PORT |
 
 /* Proxy routes */
 const proxyRoutes = require('./routes/proxyRoutes')
-//const swaggerUi = require('swagger-ui-express')
 
 proxyapp = express()
 proxyapp.use(express.json())
 
 console.log("Setting up proxy routes")
 proxyapp.use('/', cors())
-//proxyapp.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerJson))
 proxyapp.use('/users', proxyRoutes.usersRouter)
 proxyapp.use('/messages', proxyRoutes.messagesRouter)
 proxyapp.use('/conversations', proxyRoutes.conversationsRouter)
+
+// Documentation
+const swaggerUi = require('swagger-ui-express')
+const YAML = require('yamljs');
+proxyapp.use('/doc', swaggerUi.serve, swaggerUi.setup(YAML.load('back/swagger.yaml')))
 
 proxyapp.listen(process.env.PROXY_SERVICE_PORT || 8000)
 console.log('Proxy server started on port', process.env.PROXY_SERVICE_PORT || '8000')

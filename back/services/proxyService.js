@@ -60,9 +60,11 @@ async function login(req, res) {
                     })
                         .then(response => { return response.json() })
                         .then(data => {
+                            console.log('Token created: ', JSON.stringify(data))
                             return res.status(200).send({
                                 message: 'Login successful',
-                                token: data.token
+                                token: data.token,
+                                userId: user.id
                             });
                         });
                 });

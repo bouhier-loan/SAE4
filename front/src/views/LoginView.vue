@@ -1,5 +1,7 @@
 <script setup>
 import {reactive} from "vue";
+import router from "@/router/index.js";
+import store from "@/store/store.js";
 
 const data = reactive({
   username: "",
@@ -14,9 +16,20 @@ async function login() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  }).then((data) => {
-    console.log(data);
-  });
+  })
+      .then(response => {return response.json()})
+      .then(dataResponse => {
+        // If the login is successful, save the token in the local storage
+        if (dataResponse.token) {
+          store.commit("setToken", dataResponse.token);
+          store.commit("setUserId", dataResponse.userId);
+          // Redirect to the home page
+          router.push("/");
+        } else {
+          // If the login is not successful, show an error message
+          alert("Invalid credentials");
+        }
+    });
 }
 </script>
 
@@ -29,6 +42,8 @@ async function login() {
       <button type="submit">Login</button>
     </form>
   </div>
+  <br>
+  <h2>Don't have an account? <router-link to="/register">Register</router-link></h2>
 </template>
 
 <style scoped>
