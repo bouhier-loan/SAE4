@@ -4,7 +4,7 @@ import store from "@/store/store.js";
 import router from "@/router/index.js";
 
 // The parameters the component needs
-const props = defineProps({conversationId: String})
+const props = defineProps({conversationId: {type: String, required: true,}})
 
 // The input data
 const data = reactive({
@@ -39,7 +39,7 @@ async function sendMessage() {
     store.commit("setToken", data.token);
 
     // Clear the input
-    data.message = "";
+    document.querySelector(".messageBar input").value = "";
   })
 }
 </script>

@@ -334,26 +334,31 @@ async function getConversation(req, res) {
 /* Conversation get messages (Needs token)
     * @param {Object} req - request object
     * @param {String} req.params.id - conversation id
-    * @param {String} req.body.userId - user id
-    * @param {String} req.body.token - token
+    * @param {String} req.headers.authorization - userId + token
     * @param {Object} res - response object
     * @return {Object} - The response object
  */
 async function getConversationMessages(req, res) {
     /* Check if the request is valid */
-    if (!req.body.userId || !req.body.token) {
+    if (!req.headers.authorization) {
         return res.status(400).send({
             message: 'Invalid request'
         });
     }
 
+    /* Remove the Bearer from the token */
+    let {userId, token} = req.headers.authorization.split(' ');
+    console.log(req.headers.authorization)
+
+
     /* Check if the token is valid */
-    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${req.body.userId}/token`, {
+    let newToken;
+    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${userId}/token`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({token: req.body.token})
+        body: JSON.stringify({token: token})
     })
         .then(response => { return response.json() })
         .then(data => {
@@ -362,24 +367,29 @@ async function getConversationMessages(req, res) {
                     message: 'Invalid token'
                 });
             }
+            newToken = data.newToken;
+        })
+        .catch(error => {
+            console.log(error);
+            return res.status(500).send({
+                message: 'Internal server error'
+            });
+        });
 
-            /* Get the messages */
-            fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/conversations/${req.params.id}/messages`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => { return response.json() })
-                .then(data => {
-                    return res.status(data.status).send(data.body);
-                })
-                .catch(error => {
-                    console.log(error);
-                    return res.status(500).send({
-                        message: 'Internal server error'
-                    });
-                });
+    /* Get the messages */
+    fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/conversations/${req.params.id}/messages`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => { return response.json() })
+        .then(data => {
+            console.log('Messages found: ', data)
+            return res.status(200).json({
+                messages: data.messages,
+                token: newToken
+            });
         })
         .catch(error => {
             console.log(error);

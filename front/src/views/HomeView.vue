@@ -14,5 +14,7 @@ if (!store.state.token) {
     <h2>Welcome, {{ store.state.userId }}</h2>
     <br>
     <MessageBar conversationId="cb64615c-d280-4546-8f6e-6e3971d574cc"></MessageBar>
+    <br>
+    <router-link to="/dev">Dev View</router-link>
   </main>
 </template>
