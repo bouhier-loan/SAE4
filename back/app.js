@@ -52,7 +52,7 @@ proxyapp.use('/conversations', proxyRoutes.conversationsRouter)
 // Documentation
 const swaggerUi = require('swagger-ui-express')
 const YAML = require('yamljs');
-proxyapp.use('/doc', swaggerUi.serve, swaggerUi.setup(YAML.load('back/swagger.yaml')))
+proxyapp.use('/doc', swaggerUi.serve, swaggerUi.setup(YAML.load('swagger.yaml')))
 
 proxyapp.listen(process.env.PROXY_SERVICE_PORT || 8000)
 console.log('Proxy server started on port', process.env.PROXY_SERVICE_PORT || '8000')

@@ -13,6 +13,6 @@ if (!store.state.token) {
     <h1>Home</h1>
     <h2>Welcome, {{ store.state.userId }}</h2>
     <br>
-    <MessageBar conversationId="000"></MessageBar>
+    <MessageBar conversationId="cb64615c-d280-4546-8f6e-6e3971d574cc"></MessageBar>
   </main>
 </template>

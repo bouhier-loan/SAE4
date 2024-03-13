@@ -857,7 +857,8 @@ async function createMessage(req, res) {
     }
 
     /* Check if the token is valid */
-    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${req.body.userId}/token`, {
+    let newToken;
+    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${req.body.userId}/token/check`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -871,32 +872,44 @@ async function createMessage(req, res) {
                     message: 'Invalid token'
                 });
             }
+            newToken = data.newToken;
+    });
 
-            /* Send the message */
-            fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/conversations/${req.body.conversationId}/messages`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({userId: req.body.userId, content: req.body.content})
-            })
-                .then(response => { return response.json() })
-                .then(data => {
-                    return res.status(data.status).send(data.body);
-                })
-                .catch(error => {
-                    console.log(error);
-                    return res.status(500).send({
-                        message: 'Internal server error'
-                    });
+    /* Send the message */
+    fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/messages`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({userId: req.body.userId, content: req.body.content, conversationId: req.body.conversationId})
+    })
+        .then(response => { return response.json() })
+        .then(data => {
+            console.log('Message created: ', newToken)
+            if (data.message === 'Message created') {
+                console.log('Message created: ', newToken)
+                return res.status(200).send({
+                    message: 'Message created',
+                    token: newToken
                 });
-        })
-        .catch(error => {
-            console.log(error);
+            }
+            if (data.message === 'Conversation not found') {
+                return res.status(404).send({
+                    message: 'Conversation not found',
+                    token: newToken
+                });
+            }
+            if (data.message === 'The user is not a participant in the conversation') {
+                return res.status(403).send({
+                    message: 'The user is not a participant in the conversation',
+                    token: newToken
+                });
+            }
             return res.status(500).send({
-                message: 'Internal server error'
+                message: 'Internal server error',
+                token: newToken
             });
-        });
+        })
 }
 
 /* Message delete (Needs token)

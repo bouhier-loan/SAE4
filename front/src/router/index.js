@@ -6,9 +6,9 @@ import RegisterView from "@/views/RegisterView.vue";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    {path: '/', component: HomeView},
-    {path: '/login', component: LoginView},
-    {path: '/register', component: RegisterView}
+    {path: '/', component: HomeView, name: 'home'},
+    {path: '/login', component: LoginView, name: 'login'},
+    {path: '/register', component: RegisterView, name: 'register'}
   ]
 })
 

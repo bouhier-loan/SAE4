@@ -184,9 +184,28 @@ async function checkToken(req, res) {
         );
     }
 
+    await AccessToken.deleteMany({userId:req.params.id});
+
+    /* Create a new token */
+    const token = uuidv4();
+    const expires = new Date().shift(process.env.TOKEN_VALIDITY);
+
+    /* Create the token */
+    const newAccessToken = new AccessToken({
+        token: token,
+        userId: req.params.id,
+        expires: expires
+    });
+
+    /* Save the token */
+    await newAccessToken.save();
+
     /* Send the response back */
     return res.status(200).json(
-        {message: 'Token valid'}
+        {
+            message: 'Token valid',
+            newToken: token
+        }
     );
 }
 
