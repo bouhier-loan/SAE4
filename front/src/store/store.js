@@ -3,8 +3,7 @@ import {createStore} from 'vuex';
 export default createStore({
     state: {
         conversationCache: {},
-        currentConversation: null,
-        usersNames: {},
+        currentConversation: null
     },
     mutations: {
         updateCache(state, payload) {
@@ -12,9 +11,6 @@ export default createStore({
         },
         updateConversationId(state, payload) {
             state.currentConversation = payload;
-        },
-        updateUsersNames(state, payload) {
-            state.usersNames = payload;
         }
-    },
+    }
 })

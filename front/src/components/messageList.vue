@@ -8,7 +8,6 @@ store.watch(() => store.state.conversationCache, (newValue) => {
   data.messages = newValue;
 });
 
-console.log(messages);
 const data = reactive({
   messages: messages,
 });

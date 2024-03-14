@@ -1,14 +1,13 @@
 <script setup>
 import router from "@/router/index.js";
-import {ref} from "vue";
-import store from "@/store/store.js";
+import {reactive} from "vue";
 
 if (!localStorage.getItem('token')) {
   clearInterval("getMessages")
   router.push('/login');
 }
 
-let userId = ref(localStorage.getItem('userId'));
+let userId = localStorage.getItem('userId');
 
 /* Reference the users ID and Username in the store */
 fetch('http://localhost:8000/users/', {
@@ -18,19 +17,28 @@ fetch('http://localhost:8000/users/', {
   }
 })
 .then(response => response.json())
-.then(data => {
+.then(responseData => {
   let usernames = {};
-  data.users.forEach(user => {
-    usernames[user.id] = user.displayName;
+  responseData.users.forEach(user => {
+    usernames[user.id] = user.username;
+
+    if (user.id === userId) {
+      data.username = user.username;
+    }
   });
-  store.commit('updateUsersNames', usernames);
+  localStorage.setItem('userNames', usernames);
+});
+
+const data = reactive({
+  userId: userId,
+  username: localStorage.getItem('userNames')[userId],
 });
 </script>
 
 <template>
   <main>
     <h1>Home</h1>
-    <h2>Welcome, {{ userId }}</h2>
+    <h2>Welcome, {{ data.username }}</h2>
     <br>
     <router-link to="/dev">Dev View</router-link>
   </main>

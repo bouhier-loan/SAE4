@@ -8,7 +8,7 @@ if (!localStorage.getItem('token')) {
   router.push('/login');
 }
 
-const conversationId = "cb64615c-d280-4546-8f6e-6e3971d574cc";
+const conversationId = "test";
 
 async function getMessages() {
   // If the user is not logged in or not in the route /dev, stop the function
@@ -39,6 +39,10 @@ async function getMessages() {
           messages.push(message);
         });
         store.commit('updateCache', messages);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        clearInterval(getMessages)
       });
   store.commit('updateConversationId', conversationId);
 }

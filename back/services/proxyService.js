@@ -370,7 +370,7 @@ async function getConversationMessages(req, res) {
         })
         .catch(error => {
             console.log(error);
-            return res.status(500).send({
+            return res.status(503).send({
                 message: 'Internal server error'
             });
         });
@@ -389,13 +389,6 @@ async function getConversationMessages(req, res) {
                 token: newToken
             });
         })
-        .catch(error => {
-            console.log(error);
-            return res.status(500).send({
-                message: 'Internal server error',
-                token: newToken
-            });
-        });
 }
 
 /* Conversation create (Needs token)

@@ -1,22 +1,30 @@
 <script setup>
 import {defineProps, reactive} from 'vue'
-import store from '@/store/store.js'
 
 const props = defineProps({
   message: {
-    type: Object,
+    type: {
+      senderId: String,
+      conversationId: String,
+      content: {
+        message: String,
+      },
+      modified: Boolean,
+      createdAt: Date
+    },
     required: true,
   },
 });
+console.log(localStorage.getItem('userNames'));
 const data = reactive({
   message: props.message,
-  username: store.state.usersNames[props.message.senderId],
+  username: localStorage.getItem('userNames')[props.message.senderId]
 });
 </script>
 
 <template>
   <div class="message">
-    <p>{{ data.username }}</p>
+    <p style="font-weight: bold">{{ data.username }}</p>
     <p>{{ data.message.content.message }}</p>
   </div>
 </template>
