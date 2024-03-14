@@ -1,19 +1,36 @@
 <script setup>
-import MessageBar from "@/components/messageBar.vue";
-import store from "@/store/store.js";
 import router from "@/router/index.js";
+import {ref} from "vue";
+import store from "@/store/store.js";
 
-if (!store.state.token) {
-  router.push("/login")
+if (!localStorage.getItem('token')) {
+  clearInterval("getMessages")
+  router.push('/login');
 }
+
+let userId = ref(localStorage.getItem('userId'));
+
+/* Reference the users ID and Username in the store */
+fetch('http://localhost:8000/users/', {
+  method: "GET",
+  headers: {
+    "Content-Type": "application"
+  }
+})
+.then(response => response.json())
+.then(data => {
+  let usernames = {};
+  data.users.forEach(user => {
+    usernames[user.id] = user.displayName;
+  });
+  store.commit('updateUsersNames', usernames);
+});
 </script>
 
 <template>
   <main>
     <h1>Home</h1>
-    <h2>Welcome, {{ store.state.userId }}</h2>
-    <br>
-    <MessageBar conversationId="cb64615c-d280-4546-8f6e-6e3971d574cc"></MessageBar>
+    <h2>Welcome, {{ userId }}</h2>
     <br>
     <router-link to="/dev">Dev View</router-link>
   </main>

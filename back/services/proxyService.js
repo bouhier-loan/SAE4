@@ -203,7 +203,7 @@ async function getAllUsers(req, res) {
             return response.json()
         })
         .then(data => {
-            return res.status(data.status).send(data.body);
+            return res.status(200).send(data);
         })
         .catch(error => {
             console.log(error);
@@ -348,7 +348,6 @@ async function getConversationMessages(req, res) {
 
     /* Remove the Bearer from the token */
     let {userId, token} = req.headers.authorization.split(' ');
-    console.log(req.headers.authorization)
 
 
     /* Check if the token is valid */
@@ -385,7 +384,6 @@ async function getConversationMessages(req, res) {
     })
         .then(response => { return response.json() })
         .then(data => {
-            console.log('Messages found: ', data)
             return res.status(200).json({
                 messages: data.messages,
                 token: newToken
@@ -394,7 +392,8 @@ async function getConversationMessages(req, res) {
         .catch(error => {
             console.log(error);
             return res.status(500).send({
-                message: 'Internal server error'
+                message: 'Internal server error',
+                token: newToken
             });
         });
 }
@@ -850,9 +849,8 @@ async function getParticipants(req, res) {
 
 /* Message send (Needs token)
     * @param {Object} req - request object
+    * @param {String} req.headers.authorization - userId + token
     * @param {String} req.body.conversationId - conversation id
-    * @param {String} req.body.userId - user id
-    * @param {String} req.body.token - token
     * @param {Object} req.body.content - content
     * @param {String} req.body.content.message - message
     * @param {Object} res - response object
@@ -860,20 +858,24 @@ async function getParticipants(req, res) {
  */
 async function createMessage(req, res) {
     /* Check if the request is valid */
-    if (!req.body.conversationId || !req.body.userId || !req.body.token || !req.body.content || !req.body.content.message) {
+    if (!req.body.conversationId || !req.body.content || !req.body.content.message) {
         return res.status(400).send({
             message: 'Invalid request'
         });
     }
 
+    let tmp = req.headers.authorization.split(' ');
+    let userId = tmp[0];
+    let token = tmp[1];
+
     /* Check if the token is valid */
     let newToken;
-    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${req.body.userId}/token/check`, {
+    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${userId}/token/check`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({token: req.body.token})
+        body: JSON.stringify({token: token})
     })
         .then(response => { return response.json() })
         .then(data => {
@@ -885,13 +887,14 @@ async function createMessage(req, res) {
             newToken = data.newToken;
     });
 
+    console.log(userId)
     /* Send the message */
     fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/messages`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({userId: req.body.userId, content: req.body.content, conversationId: req.body.conversationId})
+        body: JSON.stringify({userId: userId, content: req.body.content, conversationId: req.body.conversationId})
     })
         .then(response => { return response.json() })
         .then(data => {

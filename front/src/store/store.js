@@ -2,15 +2,19 @@ import {createStore} from 'vuex';
 
 export default createStore({
     state: {
-        userId: null,
-        token: null
+        conversationCache: {},
+        currentConversation: null,
+        usersNames: {},
     },
     mutations: {
-      setUserId(state, userId) {
-          state.userId = userId;
-      },
-      setToken(state, token) {
-          state.token = token;
-      }
+        updateCache(state, payload) {
+            state.conversationCache= payload;
+        },
+        updateConversationId(state, payload) {
+            state.currentConversation = payload;
+        },
+        updateUsersNames(state, payload) {
+            state.usersNames = payload;
+        }
     },
 })

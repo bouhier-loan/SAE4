@@ -1,71 +1,28 @@
 <script setup>
 import store from "@/store/store.js";
 import {reactive} from "vue";
+import Message from "@/components/message.vue";
 
-const props = defineProps({
-   conversationId: {
-     type: String,
-     required: true,
-   },
+const messages = store.state.conversationCache;
+store.watch(() => store.state.conversationCache, (newValue) => {
+  data.messages = newValue;
 });
 
+console.log(messages);
 const data = reactive({
-  messages: [],
+  messages: messages,
 });
 
 
-// Get the messages of the conversation from the server
-fetch('http://localhost:8000/conversations/' + props.conversationId + '/messages', {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": store.state.userId + " " + store.state.token,
-  },
-})
-.then(response => response.json())
-.then(responseData => {
-  console.log(responseData);
-  if (!responseData.messages) {
-    return;
-  }
-  responseData.messages.forEach(message => {
-    data.messages.push(message);
-  });
-});
-
-async function getMessages() {
-  fetch('http://localhost:8000/conversations/' + props.conversationId + '/messages', {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": store.state.userId + " " + store.state.token,
-    },
-  })
-  .then(response => response.json())
-  .then(responseData => {
-    console.log(responseData);
-    if (!responseData.messages) {
-      return;
-    }
-    data.messages = [];
-    responseData.messages.forEach(message => {
-      data.messages.push(message);
-    });
-  });
-}
 </script>
 
 <template>
   <div>
     <h1>Messages</h1>
-    <ul>
-      <li v-for="message in data.messages" :key="message.id">
-        {{ message.content.message }}
-      </li>
-    </ul>
+    <div v-for="message in data.messages" :key="message.id">
+        <Message :message="message"/>
+    </div>
   </div>
-
-  <button @click="getMessages">Refresh</button>
 </template>
 
 <style scoped>

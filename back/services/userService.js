@@ -248,7 +248,6 @@ async function getUserInfo(req, res) {
  */
 async function getAllUsers(req, res) {
     /* Get all users */
-    console.log("HEYOOOO")
     let users;
     if (req.query.username) {
         users = await User.find({

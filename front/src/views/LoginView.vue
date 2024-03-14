@@ -1,7 +1,6 @@
 <script setup>
 import {reactive} from "vue";
 import router from "@/router/index.js";
-import store from "@/store/store.js";
 
 const data = reactive({
   username: "",
@@ -21,8 +20,10 @@ async function login() {
       .then(dataResponse => {
         // If the login is successful, save the token in the local storage
         if (dataResponse.token) {
-          store.commit("setToken", dataResponse.token);
-          store.commit("setUserId", dataResponse.userId);
+          // Save the token in the local storage
+          localStorage.setItem("token", dataResponse.token);
+          localStorage.setItem("userId", dataResponse.userId);
+
           // Redirect to the home page
           router.push("/");
         } else {

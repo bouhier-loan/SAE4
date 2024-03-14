@@ -3,8 +3,11 @@ import {reactive} from "vue";
 import store from "@/store/store.js";
 import router from "@/router/index.js";
 
-// The parameters the component needs
-const props = defineProps({conversationId: {type: String, required: true,}})
+// The conversation ID
+let conversationId = store.state.currentConversation;
+store.watch(() => store.state.currentConversation, (newValue) => {
+  conversationId = newValue;
+});
 
 // The input data
 const data = reactive({
@@ -21,11 +24,10 @@ async function sendMessage() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": localStorage.getItem("userId") + " " + localStorage.getItem('token'),
     },
     body: JSON.stringify({
-      userId: store.state.userId,
-      token: store.state.token,
-      conversationId: props.conversationId,
+      conversationId: conversationId,
       content: {
         message: data.message,
       }})
@@ -33,10 +35,11 @@ async function sendMessage() {
   .then(response => response.json())
   .then(data => {
     if (!data.token) {
-      store.commit("setToken", null);
+      localStorage.setItem("token", data.token);
       router.push('/login');
     }
-    store.commit("setToken", data.token);
+    localStorage.setItem("token", data.token);
+
 
     // Clear the input
     document.querySelector(".messageBar input").value = "";
