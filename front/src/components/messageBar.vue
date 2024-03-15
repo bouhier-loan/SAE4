@@ -42,14 +42,14 @@ async function sendMessage() {
 
 
     // Clear the input
-    document.querySelector(".messageBar input").value = "";
+    document.querySelector(".messageBar textarea").value = "";
   })
 }
 </script>
 
 <template>
   <form class="messageBar" @submit="sendMessage">
-    <input type="text" v-model="data.message" placeholder="Envoyer un message"/>
+    <textarea v-model="data.message" placeholder="Envoyer un message"/>
     <button type="submit"><img src="/icons/arrow-circle-right.svg" alt="send"></button>
   </form>
 </template>
@@ -59,16 +59,19 @@ async function sendMessage() {
   display: flex;
   justify-content: space-between;
   padding: 0.5rem;
-  background-color: var(--Neutral-60);
+  background-color: var(--white-70);
   border-radius: 0.5rem;
-  input {
+  textarea {
     flex: 1;
-    color: var(--Neutral-White);
-    background-color: var(--Neutral-60);
+    color: var(--white-00);
+    background-color: var(--white-70);
     border: none;
+    resize: none;
+    height: 2rem;
+    font: var(--18-sb);
 
     &::placeholder {
-      color: var(--Neutral-White);
+      color: var(--white-00);
     }
 
     &:focus {
@@ -77,15 +80,15 @@ async function sendMessage() {
   }
   
   button {
-    background-color: var(--Neutral-60);
+    background-color: var(--white-70);
     border: none;
     cursor: pointer;
     justify-content: center;
     display: flex;
     img {
-      width: 2rem;
-      height: 2rem;
-      fill: var(--Neutral-White);
+      width: 1.75rem;
+      height: 1.75rem;
+      fill: var(--white-100);
     }
   }
 }

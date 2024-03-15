@@ -8,7 +8,7 @@ if (!localStorage.getItem('token')) {
   router.push('/login');
 }
 
-const conversationId = "test";
+const conversationId = "cb64615c-d280-4546-8f6e-6e3971d574cc";
 
 async function getMessages() {
   // If the user is not logged in or not in the route /dev, stop the function
@@ -36,6 +36,7 @@ async function getMessages() {
           return;
         }
         responseData.messages.forEach(message => {
+          message.senderUsername = store.state.usernames[message.senderId];
           messages.push(message);
         });
         store.commit('updateCache', messages);
@@ -53,7 +54,7 @@ setInterval(getMessages, 1000);
 </script>
 
 <template>
-  <div>
+  <div class="app">
     <h1>Dev View</h1>
     <MessageList/>
     <br>
@@ -62,5 +63,8 @@ setInterval(getMessages, 1000);
 </template>
 
 <style scoped>
+.app {
+  background-color: var(--white-80);
 
+}
 </style>
