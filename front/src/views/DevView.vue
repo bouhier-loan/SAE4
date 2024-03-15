@@ -3,14 +3,21 @@ import router from "@/router/index.js";
 import store from "@/store/store.js";
 import MessageList from "@/components/messageList.vue";
 import MessageBar from "@/components/messageBar.vue";
+import ConversationList from "@/components/conversationList.vue";
 
 if (!localStorage.getItem('token')) {
   router.push('/login');
 }
 
-const conversationId = "cb64615c-d280-4546-8f6e-6e3971d574cc";
+
 
 async function getMessages() {
+  let conversationId = store.state.currentConversation;
+
+  if (!conversationId) {
+    return;
+  }
+
   // If the user is not logged in or not in the route /dev, stop the function
   if (!localStorage.getItem('token') || router.currentRoute.value.path !== "/dev") {
     clearInterval(getMessages)
@@ -55,16 +62,36 @@ setInterval(getMessages, 1000);
 
 <template>
   <div class="app">
-    <h1>Dev View</h1>
-    <MessageList/>
-    <br>
-    <MessageBar/>
+    <ConversationList></ConversationList>
+    <hr>
+    <div class="right">
+      <MessageList/>
+      <br>
+      <MessageBar/>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .app {
   background-color: var(--white-80);
+  display: flex;
+  flex-direction: row;
+  gap: 2.5rem;
+}
 
+hr {
+  width: 1px;
+  background-color: var(--success-60);
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
 }
 </style>

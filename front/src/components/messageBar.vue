@@ -40,16 +40,16 @@ async function sendMessage() {
     }
     localStorage.setItem("token", data.token);
 
-
     // Clear the input
-    document.querySelector(".messageBar textarea").value = "";
+    document.querySelector(".messageBar input").value = "";
+    this.$refs.lastMessage.scrollIntoView({ behavior: 'smooth' });
   })
 }
 </script>
 
 <template>
   <form class="messageBar" @submit="sendMessage">
-    <textarea v-model="data.message" placeholder="Envoyer un message"/>
+    <input type="text" v-model="data.message" placeholder="Envoyer un message"/>
     <button type="submit"><img src="/icons/arrow-circle-right.svg" alt="send"></button>
   </form>
 </template>
@@ -61,7 +61,7 @@ async function sendMessage() {
   padding: 0.5rem;
   background-color: var(--white-70);
   border-radius: 0.5rem;
-  textarea {
+  input {
     flex: 1;
     color: var(--white-00);
     background-color: var(--white-70);

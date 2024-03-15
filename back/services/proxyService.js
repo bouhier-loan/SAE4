@@ -218,26 +218,29 @@ async function getAllUsers(req, res) {
 
 /* Conversation get all (Needs token)
     * @param {Object} req - request object
-    * @param {String} req.body.userId - user id
-    * @param {String} req.body.token - token
+    * @param {String} req.headers.authorization - userId + token
     * @param {Object} res - response object
     * @return {Object} - The response object
  */
 async function getAllConversations(req, res) {
     /* Check if the request is valid */
-    if (!req.body.userId || !req.body.token) {
+    if (!req.headers.authorization) {
         return res.status(400).send({
             message: 'Invalid request'
         });
     }
 
+    let tmp = req.headers.authorization.split(' ');
+    let userId = tmp[0];
+    let token = tmp[1];
+
     /* Check if the token is valid */
-    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${req.body.userId}/token`, {
+    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${userId}/token`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({token: req.body.token})
+        body: JSON.stringify({token: token})
     })
         .then(response => { return response.json() })
         .then(data => {
@@ -248,29 +251,17 @@ async function getAllConversations(req, res) {
             }
 
             /* Get all conversations */
-            fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/conversations?userId=${req.body.userId}`, {
+            fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/conversations?userId=${userId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
-                .then(response => { return response.json() })
+                .then(response => {return response.json() })
                 .then(data => {
-                    return res.status(data.status).send(data.body);
+                    return res.status(200).send(data);
                 })
-                .catch(error => {
-                    console.log(error);
-                    return res.status(500).send({
-                        message: 'Internal server error'
-                    });
-                });
         })
-        .catch(error => {
-            console.log(error);
-            return res.status(500).send({
-                message: 'Internal server error'
-            });
-        });
 }
 
 /* Conversation get (Needs token)
@@ -346,7 +337,6 @@ async function getConversationMessages(req, res) {
         });
     }
 
-    /* Remove the Bearer from the token */
     let {userId, token} = req.headers.authorization.split(' ');
 
 

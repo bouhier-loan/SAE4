@@ -3,9 +3,9 @@ import store from "@/store/store.js";
 import {reactive} from "vue";
 import Message from "@/components/message.vue";
 
-const messages = store.state.conversationCache;
+const messages = store.state.conversationMessages;
 
-store.watch(() => store.state.conversationCache, (newValue) => {
+store.watch(() => store.state.conversationMessages, (newValue) => {
   /* Add a value `isFollowing` to each message */
   let firstMessage = true;
   for (let message of newValue) {
@@ -19,15 +19,21 @@ store.watch(() => store.state.conversationCache, (newValue) => {
     }
   }
 
+  /* Add a value `isLast` to the last message */
+  if (newValue.length > 0) {
+    newValue[newValue.length - 1].isLast = true;
+  }
+
   data.messages = newValue;
 
   /* Humanize the date */
   for (let message of data.messages) {
     // If the message is sent today, only show the relative time
     if (new Date(message.date).toDateString() === new Date().toDateString()) {
-      message.date = "Aujourd'hui à " + new Date(message.date).toLocaleTimeString();
+      // If the message is sent today, only show the relative time (e.g. "Aujourd'hui à 14:30") without the seconds
+      message.date = "Aujourd'hui à " + new Date(message.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}).replace(':', 'h');
     } else {
-      message.date = new Date(message.date).toLocaleString();
+      message.date = "Le " + new Date(message.date).toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit', year: 'numeric'}) + " à " + new Date(message.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}).replace(':', 'h');
     }
   }
 });
@@ -35,16 +41,18 @@ store.watch(() => store.state.conversationCache, (newValue) => {
 const data = reactive({
   messages: messages,
 });
-
 </script>
 
 <template>
-  <div>
+  <div class="list">
     <h1>Messages</h1>
-        <Message v-for="message in data.messages" :key="message.id" :message="message"/>
+        <Message v-for="message in data.messages" :key="message.id" :ref="message.isLast ? 'lastMessage' : null" :message="message"/>
   </div>
 </template>
 
 <style scoped>
-
+.list {
+  max-height: 80vh;
+  overflow-y: auto;
+}
 </style>
