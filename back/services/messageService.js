@@ -3,6 +3,20 @@ const Message = require('../models/message');
 
 const { v4: uuidv4 } = require('uuid');
 
+/* Valid colors for conversations */
+const colors = [
+    'CF4920',
+    '638404',
+    '007EA8',
+    '4032DC',
+    '8219D4',
+    'CB3668',
+    '00632B',
+    '976400',
+    'B01212',
+    '4A4A4A',
+]
+
 /* Create a new message
  * @param {Object} req - The request object
  * @param {String} req.body.userId - The user's id
@@ -209,10 +223,12 @@ async function createConversation(req, res) {
 
     /* Create a new conversation */
     let conversation = new Conversation({
-        id: uuidv4(),
+        id: uuidv4(undefined, undefined, undefined),
         ownerId: req.body.ownerId,
         participants: req.body.participants,
-        name: req.body.name
+        name: req.body.name,
+        lastUpdated: new Date(),
+        color: colors[Math.floor(Math.random() * colors.length)]
     });
 
     /* Save the conversation */

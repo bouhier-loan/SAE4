@@ -35,7 +35,8 @@ async function sendMessage() {
   .then(response => response.json())
   .then(data => {
     if (!data.token) {
-      localStorage.setItem("token", data.token);
+      console.log("Invalid token");
+      localStorage.setItem("token", null);
       router.push('/login');
     }
     localStorage.setItem("token", data.token);
@@ -61,6 +62,9 @@ async function sendMessage() {
   padding: 0.5rem;
   background-color: var(--white-70);
   border-radius: 0.5rem;
+  width: 80%;
+  align-self: center;
+
   input {
     flex: 1;
     color: var(--white-00);

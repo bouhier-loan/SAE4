@@ -842,7 +842,7 @@ async function getParticipants(req, res) {
 async function createMessage(req, res) {
     /* Check if the request is valid */
     if (!req.body.conversationId || !req.body.content || !req.body.content.message) {
-        return res.status(400).send({
+        return res.status(400).json({
             message: 'Invalid request'
         });
     }
@@ -863,14 +863,13 @@ async function createMessage(req, res) {
         .then(response => { return response.json() })
         .then(data => {
             if (data.message === 'Invalid token') {
-                return res.status(401).send({
+                return res.status(401).json({
                     message: 'Invalid token'
                 });
             }
             newToken = data.newToken;
     });
 
-    console.log(userId)
     /* Send the message */
     fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/messages`, {
         method: 'POST',
@@ -881,27 +880,25 @@ async function createMessage(req, res) {
     })
         .then(response => { return response.json() })
         .then(data => {
-            console.log('Message created: ', newToken)
             if (data.message === 'Message created') {
-                console.log('Message created: ', newToken)
-                return res.status(200).send({
+                return res.status(200).json({
                     message: 'Message created',
                     token: newToken
                 });
             }
             if (data.message === 'Conversation not found') {
-                return res.status(404).send({
+                return res.status(404).json({
                     message: 'Conversation not found',
                     token: newToken
                 });
             }
             if (data.message === 'The user is not a participant in the conversation') {
-                return res.status(403).send({
+                return res.status(403).json({
                     message: 'The user is not a participant in the conversation',
                     token: newToken
                 });
             }
-            return res.status(500).send({
+            return res.status(500).json({
                 message: 'Internal server error',
                 token: newToken
             });

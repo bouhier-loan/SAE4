@@ -2,6 +2,7 @@
 import store from "@/store/store.js";
 import {reactive} from "vue";
 import router from "@/router/index.js";
+import Conversation from "@/components/conversation.vue";
 
 let conversations;
 let data = reactive({
@@ -44,30 +45,48 @@ store.watch(() => store.state.conversations, (newValue) => {
 </script>
 
 <template>
-  <div>
-    <h1>Conversations</h1>
-    <div v-for="conversation in data.conversations" :key="conversation.id" class="selector">
-      <div @click="selectConversation(conversation.id)" class="item">
-        <span>{{ conversation.name }}</span>
-      </div>
+  <div class="component">
+    <div class="title">
+      <img src="/icons/annotation.svg" alt="conversation icon"/>
+      <span>Conversations</span>
+    </div>
+    <div class="list">
+      <Conversation @click="selectConversation(conversation.id)" v-for="conversation in data.conversations" :key="conversation.id" :conversation="conversation" :isSelected="conversation.id === store.state.currentConversation"/>
     </div>
   </div>
 
 </template>
 
 <style scoped>
-.selector {
+.component {
   display: flex;
-  flex-direction: row;
-  gap: 0.5em;
-  margin-top: 1em;
+  flex-direction: column;
+  gap: 40px;
+  padding: 20px;
+  background-color: var(--white-90);
 }
 
-.item {
+.title {
   display: flex;
-  flex-direction: row;
-  gap: 0.1em;
-  padding: 0.5em;
-  cursor: pointer;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+
+  img {
+    width: 30px;
+    height: 30px;
+    filter: invert(1);
+  }
+
+  span {
+    font-size: 24px;
+    color: var(--white-00);
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>

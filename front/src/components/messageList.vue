@@ -45,7 +45,6 @@ const data = reactive({
 
 <template>
   <div class="list">
-    <h1>Messages</h1>
         <Message v-for="message in data.messages" :key="message.id" :ref="message.isLast ? 'lastMessage' : null" :message="message"/>
   </div>
 </template>

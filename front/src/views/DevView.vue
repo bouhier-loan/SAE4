@@ -6,6 +6,7 @@ import MessageBar from "@/components/messageBar.vue";
 import ConversationList from "@/components/conversationList.vue";
 
 if (!localStorage.getItem('token')) {
+  console.log("C là")
   router.push('/login');
 }
 
@@ -55,7 +56,7 @@ async function getMessages() {
   store.commit('updateConversationId', conversationId);
 }
 
-/* Call getMessages() once and then every 5 seconds in the background */
+/* Call getMessages() once and then every second in the background */
 getMessages();
 setInterval(getMessages, 1000);
 </script>
@@ -77,11 +78,11 @@ setInterval(getMessages, 1000);
   background-color: var(--white-80);
   display: flex;
   flex-direction: row;
-  gap: 2.5rem;
+  height: 100vh;
 }
 
 hr {
-  width: 1px;
+  width: 2px;
   background-color: var(--success-60);
   border: none;
   margin: 0;
@@ -93,5 +94,8 @@ hr {
   flex-direction: column;
   gap: 1rem;
   width: 100%;
+  height: 100%;
+  justify-content: end;
+  padding-bottom: 1rem;
 }
 </style>

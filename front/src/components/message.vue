@@ -1,6 +1,5 @@
 <script setup>
 import {defineProps, reactive} from 'vue'
-import store from "@/store/store.js";
 
 const props = defineProps({
   message: {
@@ -32,7 +31,8 @@ const data = reactive({
     </div>
 
     <div class="content">
-      <span class="message" v-html="data.message.content.message.replace(/\n/g, '<br>')"></span>
+      <span class="text" v-html="data.message.content.message.replace(/\n/g, '<br>')"></span>
+      <span v-if="data.message.modified" class="modified">(modified)</span>
     </div>
   </div>
 </template>
@@ -51,6 +51,7 @@ const data = reactive({
   flex-direction: column;
   gap: 0.1em;
   margin-top: 1em;
+  padding: 0 3rem;
 
   .header {
     display: flex;
@@ -76,13 +77,12 @@ const data = reactive({
     display: flex;
     flex-direction: initial;
     align-items: end;
-    padding-left: 0.5em;
     gap: 0.2rem;
 
-    .message {
+    .text {
       font-weight: normal;
       font-size: 16px;
-      color: var(--white-00);
+      color: var(--white-40);
       margin: 0;
     }
 
