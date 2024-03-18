@@ -43,17 +43,24 @@ async function sendMessage() {
     localStorage.setItem("token", data.token);
 
     // Clear the input
-    document.querySelector(".messageBar input").value = "";
+    document.querySelector(".messageBar textarea").value = "";
     data.message = "";
     data.nbRows = 1;
-    this.$refs.lastMessage.scrollIntoView({ behavior: 'smooth' });
+    this.parent.$refs.lastMessage.scrollIntoView({ behavior: 'smooth' });
   })
+}
+
+// Auto resize the textarea, the maximum number of rows is 5
+function autoResize() {
+  const textarea = document.querySelector(".messageBar textarea");
+  const nbRows = textarea.value.split("\n").length;
+  data.nbRows = nbRows > 5 ? 5 : nbRows;
 }
 </script>
 
 <template>
   <form class="messageBar" @submit="sendMessage">
-    <textarea v-model="data.message" placeholder="Envoyer un message" @keydown.enter.exact.prevent="sendMessage" @keydown.shift.enter.exact.prevent="data.message += '\n'; data.nbRows = data.message.match('/\\n/gm').length + 1" :rows="data.nbRows" @keydown.delete.prevent="data.nbRows = data.message.match('/\\n/gm').length + 1; " @beforeinput="data.nbRows = data.message.match('/\\n/gm').length + 1"/>
+    <textarea v-model="data.message" placeholder="Envoyer un message" @keydown.enter.exact.prevent="sendMessage" @keydown.shift.enter.exact.prevent="data.message += '\n'; autoResize" :rows="data.nbRows" @keyup="autoResize"/>
     <button type="submit"><img src="/icons/arrow-circle-right.svg" alt="send"></button>
   </form>
 </template>
@@ -74,6 +81,7 @@ async function sendMessage() {
     background-color: var(--white-70);
     border: none;
     resize: none;
+    overflow: hidden;
     font: var(--18-sb);
 
     &::placeholder {

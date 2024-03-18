@@ -3,17 +3,7 @@ import {defineProps, reactive} from 'vue'
 
 const props = defineProps({
   message: {
-    type: {
-      senderId: String,
-      senderUsername: String,
-      conversationId: String,
-      content: {
-        message: String,
-      },
-      modified: Boolean,
-      createdAt: Date,
-      isFollowing: Boolean,
-    },
+    type: Object,
     required: true,
   }
 });

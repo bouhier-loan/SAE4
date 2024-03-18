@@ -1,7 +1,7 @@
 <script setup>
-import {defineProps, reactive} from "vue";
+import {defineProps} from "vue";
 
-let props = defineProps({
+defineProps({
   user: {
     type: {
       id: Number,
@@ -10,21 +10,29 @@ let props = defineProps({
       color: String,
     },
     required: true,
-  }
-});
-
-let data = reactive({
-  user: props.user,
+  },
+  participantIsOwner: {
+    type: Boolean,
+    required: true,
+  },
+  userIsOwner: {
+    type: Boolean,
+    required: true,
+  },
 });
 </script>
 
 <template>
   <div class="user">
-    <div class="color" :style="{ backgroundColor: '#' + data.user.color }"></div>
-    <div class="infos">
-      <span class="displayName">{{ data.user.displayName }}</span>
-      <span class="username">@{{ data.user.username }}</span>
+    <div class="global">
+      <div class="color" :style="{ backgroundColor: '#' + user.color }"></div>
+      <div class="infos">
+        <span class="displayName">{{ user.displayName }}</span>
+        <span class="username">@{{ user.username }}</span>
+      </div>
     </div>
+    <img src="/icons/shield-exclamation.svg" alt="Conversation owner" v-if="participantIsOwner" class="owner"/>
+    <span v-else-if="userIsOwner" class="kick" @click="console.log('TODO!')">✗</span>
   </div>
 </template>
 
@@ -33,33 +41,59 @@ let data = reactive({
   display: flex;
   align-items: center;
   padding: 5px 10px;
-  gap: 10px;
+  gap: 20px;
   cursor: pointer;
   border-radius: 5px;
+  width: 100%;
+  justify-content: space-between;
 
-  .color {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 3px solid var(--white-100);
+  font-size: 18px;
+  color: var(--white-90);
+
+  &:hover {
+    background-color: var(--white-80);
+    color: var(--white-60);
   }
 
-  .infos {
+  .global {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 
-    .displayName {
-      font-weight: bold;
-      font-size: 18px;
-      color: var(--white-00);
-      line-height: 22px;
+    .color {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 3px solid var(--white-100);
     }
 
-    .username {
-      font-size: 14px;
-      color: var(--white-40);
-      line-height: 22px;
+    .infos {
+      display: flex;
+      flex-direction: column;
+
+      .displayName {
+        font-weight: bold;
+        font-size: 18px;
+        color: var(--white-00);
+        line-height: 22px;
+      }
+
+      .username {
+        font-size: 14px;
+        color: var(--white-40);
+        line-height: 22px;
+      }
     }
+  }
+
+  .owner {
+    width: 30px;
+    height: 30px;
+    filter: invert(1);
+  }
+
+  .kick:hover {
+    color: var(--white-40);
   }
 }
 </style>

@@ -12,7 +12,11 @@ if (!localStorage.getItem('token')) {
 <div class="home-vue">
   <div class="home">
     <div class="home-header">
-      <img src="/icons/logo.png" alt="logo" class="logo">
+      <div class="home-logo">
+        <img src="/icons/logo.png" alt="logo">
+        <span class="home-title">Harmony</span>
+        <span class="home-subtitle">By Eros</span>
+      </div>
       <div class="home-list">
         <div class="home-list-item">
           <img src="/icons/annotation.svg" alt="">
@@ -50,9 +54,33 @@ if (!localStorage.getItem('token')) {
       align-items: center;
       gap: 30px;
 
-      .logo {
-        width: 69px;
-        height: 75px;
+      .home-logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        .home-title {
+          color: var(--white-10);
+          font-size: 24px;
+          font-family: "Itim", cursive;
+          font-weight: 400;
+          font-style: normal;
+          line-height: 26px;
+        }
+
+        .home-subtitle {
+          color: var(--white-40);
+          font-size: 16px;
+          font-family: "Itim", cursive;
+          font-weight: 400;
+          font-style: normal;
+        }
+
+        img {
+          width: 69px;
+          height: 75px;
+        }
       }
 
       .home-list {

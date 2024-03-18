@@ -47,7 +47,7 @@ async function getMessages() {
           message.senderColor = store.state.users.find(user => user.id === message.senderId).color;
           let usersNotified = message.content.message.match(/@(\w+)/g);
           if (usersNotified) {
-            message.isNotified = usersNotified.map(user => user.slice(1));
+            message.isNotified = usersNotified.includes("@" + localStorage.getItem("username"));
           }
 
           messages.push(message);

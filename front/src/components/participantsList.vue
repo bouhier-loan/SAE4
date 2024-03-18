@@ -2,11 +2,12 @@
 import Participant from "@/components/participant.vue";
 import store from "@/store/store.js";
 import {reactive} from "vue";
-import router from "@/router/index.js";
 
 let participants;
 let data = reactive({
   participants: [],
+  owner: null,
+  userId: localStorage.getItem("userId"),
 });
 
 store.watch(() => store.state.currentConversation, (newValue) => {
@@ -15,6 +16,7 @@ store.watch(() => store.state.currentConversation, (newValue) => {
       let participantsIds = conversation.participants;
       participants = store.state.users.filter(user => participantsIds.includes(user.id));
       data.participants = participants;
+      data.owner = conversation.ownerId;
     }
   })
 });
@@ -24,6 +26,7 @@ store.state.conversations.forEach(conversation => {
     let participantsIds = conversation.participants;
     participants = store.state.users.filter(user => participantsIds.includes(user.id));
     data.participants = participants;
+    data.owner = conversation.ownerId;
   }
 })
 
@@ -39,7 +42,13 @@ function copyToClipboard(payload) {
       <span>Participants</span>
     </div>
     <div class="list">
-      <Participant v-for="participant in data.participants" :key="participant.id" :user="participant" @click="copyToClipboard('@' + participant.username)"/>
+      <Participant v-for="participant in data.participants"
+                   :key="participant.id"
+                   :user="participant"
+                   :participant-is-owner="participant.id === data.owner"
+                   :user-is-owner="data.userId === data.owner"
+                   @click="copyToClipboard('@' + participant.username)"
+      />
     </div>
   </div>
 
