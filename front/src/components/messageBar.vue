@@ -12,6 +12,7 @@ store.watch(() => store.state.currentConversation, (newValue) => {
 // The input data
 const data = reactive({
   message: "",
+  nbRows: 1,
 });
 
 // Send a message in the conversation
@@ -43,6 +44,8 @@ async function sendMessage() {
 
     // Clear the input
     document.querySelector(".messageBar input").value = "";
+    data.message = "";
+    data.nbRows = 1;
     this.$refs.lastMessage.scrollIntoView({ behavior: 'smooth' });
   })
 }
@@ -50,7 +53,7 @@ async function sendMessage() {
 
 <template>
   <form class="messageBar" @submit="sendMessage">
-    <input type="text" v-model="data.message" placeholder="Envoyer un message"/>
+    <textarea v-model="data.message" placeholder="Envoyer un message" @keydown.enter.exact.prevent="sendMessage" @keydown.shift.enter.exact.prevent="data.message += '\n'; data.nbRows = data.message.match('/\\n/gm').length + 1" :rows="data.nbRows" @keydown.delete.prevent="data.nbRows = data.message.match('/\\n/gm').length + 1; " @beforeinput="data.nbRows = data.message.match('/\\n/gm').length + 1"/>
     <button type="submit"><img src="/icons/arrow-circle-right.svg" alt="send"></button>
   </form>
 </template>
@@ -65,13 +68,12 @@ async function sendMessage() {
   width: 80%;
   align-self: center;
 
-  input {
+  textarea {
     flex: 1;
     color: var(--white-00);
     background-color: var(--white-70);
     border: none;
     resize: none;
-    height: 2rem;
     font: var(--18-sb);
 
     &::placeholder {

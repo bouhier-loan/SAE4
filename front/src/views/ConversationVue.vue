@@ -11,7 +11,6 @@ if (!localStorage.getItem('token')) {
   router.push('/login');
 }
 
-
 async function getMessages() {
   let conversationId = store.state.currentConversation;
 
@@ -20,7 +19,7 @@ async function getMessages() {
   }
 
   // If the user is not logged in or not in the route /dev, stop the function
-  if (!localStorage.getItem('token') || router.currentRoute.value.path !== "/dev") {
+  if (!localStorage.getItem('token') || router.currentRoute.value.path !== "/") {
     clearInterval(getMessages)
     return;
   }
@@ -48,11 +47,7 @@ async function getMessages() {
           message.senderColor = store.state.users.find(user => user.id === message.senderId).color;
           let usersNotified = message.content.message.match(/@(\w+)/g);
           if (usersNotified) {
-            usersNotified.forEach(user => {
-              if (user === "@" + localStorage.getItem('username')) {
-                message.isNotified = true;
-              }
-            });
+            message.isNotified = usersNotified.map(user => user.slice(1));
           }
 
           messages.push(message);

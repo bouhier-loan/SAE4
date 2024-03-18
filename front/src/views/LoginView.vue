@@ -23,6 +23,7 @@ async function login() {
           // Save the token in the local storage
           localStorage.setItem("token", dataResponse.token);
           localStorage.setItem("userId", dataResponse.userId);
+          localStorage.setItem("username", data.username);
 
           // Redirect to the home page
           router.push("/");
