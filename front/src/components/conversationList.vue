@@ -36,7 +36,7 @@ fetch('http://localhost:8000/conversations', {
 
 function selectConversation(conversationId) {
   store.commit('updateConversationId', conversationId);
-  router.push('/dev');
+  router.push('/');
 }
 
 store.watch(() => store.state.conversations, (newValue) => {
@@ -64,6 +64,7 @@ store.watch(() => store.state.conversations, (newValue) => {
   gap: 40px;
   padding: 20px;
   background-color: var(--white-90);
+  border-top-left-radius: 10px;
 }
 
 .title {

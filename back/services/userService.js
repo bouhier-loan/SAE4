@@ -3,6 +3,20 @@ const AccessToken = require('../models/accessToken');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 
+/* Valid colors for users */
+const colors = [
+    'CF4920',
+    '638404',
+    '007EA8',
+    '4032DC',
+    '8219D4',
+    'CB3668',
+    '00632B',
+    '976400',
+    'B01212',
+    '4A4A4A',
+]
+
 /* Shift the date by a number of seconds
  * @param {Number} seconds - The number of seconds to shift the date by
  * @returns {Date} - The shifted date
@@ -68,7 +82,8 @@ async function createUser(req, res) {
         id: uuidv4(),
         username: req.body.username,
         displayName: req.body.displayName || req.body.username,
-        password: hash
+        password: hash,
+        color: colors[Math.floor(Math.random() * colors.length)]
     });
 
     /* Save the user */
@@ -263,7 +278,8 @@ async function getAllUsers(req, res) {
         return {
             id: user.id,
             username: user.username,
-            displayName: user.displayName
+            displayName: user.displayName,
+            color: user.color
         }
     });
 

@@ -17,21 +17,32 @@ const props = defineProps({
     required: true,
   }
 });
-console.log(localStorage.getItem('userNames'));
+
+/* Replace \n with <br> */
+props.message.content.message = props.message.content.message.replace(/\n/g, '<br>');
+
+/* Make @mentions bold */
+props.message.content.message = props.message.content.message.replace(/@(\w+)/g, '<span style="font-weight: bold; color: var(--white-30)">@$1</span>');
+
+
 const data = reactive({
-  message: props.message,
+  message: props.message
 });
+
 </script>
 
 <template>
-  <div class="message" :class="{isFollowing: data.message.isFollowing}">
+  <div class="message" :class="{isFollowing: data.message.isFollowing, isNotified: data.message.isNotified}">
     <div v-if="!data.message.isFollowing" class="header">
-      <span class="user">{{ data.message.senderUsername }}</span>
+      <div class="userInfos">
+        <div class="color" :style="{backgroundColor: '#' + data.message.senderColor}"></div>
+        <span class="user">{{ data.message.senderUsername }}</span>
+      </div>
       <span class="date">{{ data.message.date.toString() }}</span>
     </div>
 
     <div class="content">
-      <span class="text" v-html="data.message.content.message.replace(/\n/g, '<br>')"></span>
+      <span class="text" v-html="data.message.content.message"></span>
       <span v-if="data.message.modified" class="modified">(modified)</span>
     </div>
   </div>
@@ -44,6 +55,16 @@ const data = reactive({
 
 .message.isFollowing {
   margin-top: 0;
+}
+
+.message.isNotified {
+  background-color: rgba(159, 219, 239, 10%);
+  border-left: 4px solid var(--cyan-40);
+}
+
+.message.isNotified:hover {
+  background-color: rgba(65, 173, 209, 10%);
+  border-left: 4px solid var(--cyan-40);
 }
 
 .message {
@@ -59,12 +80,28 @@ const data = reactive({
     align-items: end;
     gap: 0.5em;
 
-    .user {
-      font-weight: bold;
-      font-size: 18px;
-      margin: 0;
-      color: var(--white-00);
+    .userInfos {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      flex-direction: row;
+
+      .color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--white-100);
+      }
+
+      .user {
+        font-weight: bold;
+        font-size: 18px;
+        margin: 0;
+        color: var(--white-00);
+      }
     }
+
+
 
     .date {
       font-size: 0.7rem;

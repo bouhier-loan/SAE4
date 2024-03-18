@@ -1,6 +1,6 @@
 <script setup>
 import store from "@/store/store.js";
-import {reactive} from "vue";
+import {onMounted, reactive} from "vue";
 import Message from "@/components/message.vue";
 
 const messages = store.state.conversationMessages;
@@ -36,11 +36,21 @@ store.watch(() => store.state.conversationMessages, (newValue) => {
       message.date = "Le " + new Date(message.date).toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit', year: 'numeric'}) + " à " + new Date(message.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}).replace(':', 'h');
     }
   }
+
+  let lastMessage = document.querySelector('[ref="lastMessage"]');
+  if (lastMessage) {
+    lastMessage.scrollIntoView({behavior: "smooth", block: "end"});
+  }
 });
 
 const data = reactive({
   messages: messages,
 });
+
+let lastMessage = document.querySelector('[ref="lastMessage"]');
+if (lastMessage) {
+  lastMessage.scrollIntoView({behavior: "smooth", block: "end"});
+}
 </script>
 
 <template>
@@ -51,7 +61,7 @@ const data = reactive({
 
 <style scoped>
 .list {
-  max-height: 80vh;
+  max-height: 100vh;
   overflow-y: auto;
 }
 </style>

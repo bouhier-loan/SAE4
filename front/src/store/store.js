@@ -5,7 +5,7 @@ export default createStore({
         conversationMessages: {},
         conversations: [],
         currentConversation: null,
-        usernames: {}
+        users: []
     },
     mutations: {
         updateCache(state, payload) {
@@ -14,8 +14,8 @@ export default createStore({
         updateConversationId(state, payload) {
             state.currentConversation = payload;
         },
-        updateUsernames(state, payload) {
-            state.usernames = payload;
+        updateUsers(state, payload) {
+            state.users = payload;
         },
         updateConversations(state, payload) {
             state.conversations = payload;

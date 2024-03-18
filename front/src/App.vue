@@ -13,11 +13,8 @@ fetch('http://localhost:8000/users/', {
 })
     .then(response => response.json())
     .then(responseData => {
-      let usernames = {};
-      responseData.users.forEach(user => {
-        usernames[user.id] = user.username;
-      });
-      store.commit("updateUsernames", usernames);
+      let users = responseData.users;
+      store.commit("updateUsers", users);
     });
 </script>
 

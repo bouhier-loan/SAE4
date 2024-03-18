@@ -4,12 +4,12 @@ import store from "@/store/store.js";
 import MessageList from "@/components/messageList.vue";
 import MessageBar from "@/components/messageBar.vue";
 import ConversationList from "@/components/conversationList.vue";
+import ParticipantsList from "@/components/participantsList.vue";
+import ConversationCreate from "@/components/conversationCreate.vue";
 
 if (!localStorage.getItem('token')) {
-  console.log("C là")
   router.push('/login');
 }
-
 
 
 async function getMessages() {
@@ -44,7 +44,17 @@ async function getMessages() {
           return;
         }
         responseData.messages.forEach(message => {
-          message.senderUsername = store.state.usernames[message.senderId];
+          message.senderUsername = store.state.users.find(user => user.id === message.senderId).username;
+          message.senderColor = store.state.users.find(user => user.id === message.senderId).color;
+          let usersNotified = message.content.message.match(/@(\w+)/g);
+          if (usersNotified) {
+            usersNotified.forEach(user => {
+              if (user === "@" + localStorage.getItem('username')) {
+                message.isNotified = true;
+              }
+            });
+          }
+
           messages.push(message);
         });
         store.commit('updateCache', messages);
@@ -63,13 +73,18 @@ setInterval(getMessages, 1000);
 
 <template>
   <div class="app">
-    <ConversationList></ConversationList>
+    <div class="left">
+      <ConversationList/>
+      <ConversationCreate/>
+    </div>
     <hr>
-    <div class="right">
+    <div class="middle">
       <MessageList/>
       <br>
       <MessageBar/>
     </div>
+    <hr>
+    <ParticipantsList/>
   </div>
 </template>
 
@@ -78,7 +93,9 @@ setInterval(getMessages, 1000);
   background-color: var(--white-80);
   display: flex;
   flex-direction: row;
-  height: 100vh;
+  flex-grow: 1;
+  margin-top: 15px;
+  border-top-left-radius: 10px;
 }
 
 hr {
@@ -89,13 +106,21 @@ hr {
   padding: 0;
 }
 
-.right {
+.middle {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   width: 100%;
   height: 100%;
   justify-content: end;
   padding-bottom: 1rem;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  background-color: var(--white-90);
+  border-top-left-radius: 10px;
 }
 </style>
