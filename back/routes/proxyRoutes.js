@@ -52,13 +52,13 @@ conversationsRouter.route('/:id/messages')
             await proxyService.getConversationMessages(req, res);
         });
 
-conversationsRouter.route('/:id/participants/add')
+conversationsRouter.route('/:id/participants')
         .post(async (req, res) => {
             await proxyService.addParticipant(req, res);
         });
 
-conversationsRouter.route('/:id/participants/remove')
-        .post(async (req, res) => {
+conversationsRouter.route('/:id/participants/:participant')
+        .delete(async (req, res) => {
             await proxyService.removeParticipant(req, res);
         });
 

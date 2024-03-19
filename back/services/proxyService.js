@@ -15,8 +15,6 @@ async function login(req, res) {
         });
     }
 
-    console.log(JSON.stringify(req.body))
-
     /* Get the user */
     console.info('Get the user')
     fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users?username=${req.body.username}`, {
@@ -609,29 +607,36 @@ async function updateConversation(req, res) {
 /* Conversation add participant (Needs token)
     * @param {Object} req - request object
     * @param {String} req.params.id - conversation id
-    * @param {String} req.body.userId - user id
-    * @param {String} req.body.token - token
+    * @param {String} req.headers.authorization - userId + token
     * @param {String} req.body.participantId - participant id
     * @param {Object} res - response object
     * @return {Object} - The response object
  */
 async function addParticipant(req, res) {
     /* Check if the request is valid */
-    if (!req.body.userId || !req.body.token || !req.body.participantId) {
+    if (!req.body.participantId) {
         return res.status(400).send({
             message: 'Invalid request'
         });
     }
 
+    let tmp = req.headers.authorization.split(' ');
+    let userId = tmp[0];
+    let token = tmp[1];
+
+    let newToken;
+
     /* Check if the token is valid */
-    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${req.body.userId}/token`, {
+    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${userId}/token`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({token: req.body.token})
+        body: JSON.stringify({token: token})
     })
-        .then(response => { return response.json() })
+        .then(response => {
+            return response.json()
+        })
         .then(data => {
             if (data.message === 'Invalid token') {
                 return res.status(401).send({
@@ -639,53 +644,51 @@ async function addParticipant(req, res) {
                 });
             }
 
-            /* Check if the user is the owner of the conversation */
-            fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/conversations/${req.params.id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(response => { return response.json() })
-                .then(data => {
-                    if (data.body.ownerId !== req.body.userId) {
-                        return res.status(403).send({
-                            message: 'Forbidden'
-                        });
-                    }
+            newToken = data.newToken;
+        });
 
-                    /* Add the participant */
-                    fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/conversations/${req.params.id}/participants`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({participantId: req.body.participantId})
-                    })
-                        .then(response => { return response.json() })
-                        .then(data => {
-                            return res.status(data.status).send(data.body);
-                        })
-                        .catch(error => {
-                            console.log(error);
-                            return res.status(500).send({
-                                message: 'Internal server error'
-                            });
-                        });
-                })
-                .catch(error => {
-                    console.log(error);
-                    return res.status(500).send({
-                        message: 'Internal server error'
-                    });
+    /* Check if the user is the owner of the conversation */
+    fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/conversations/${req.params.id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => {return response.json()})
+        .then(data => {
+            if (data.ownerId !== userId) {
+                return res.status(403).send({
+                    message: 'Forbidden',
+                    token: newToken
                 });
+            }
+        })
+
+    /* Add the participant */
+    fetch(`http://localhost:${process.env.MESSAGE_SERVICE_PORT}/conversations/${req.params.id}/participants`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({participantId: req.body.participantId})
+    })
+        .then(response => { return response.json() })
+        .then(data => {
+            return res.status(200).send(
+                {
+                    message: 'Participant added',
+                    token: newToken
+                }
+            );
         })
         .catch(error => {
             console.log(error);
             return res.status(500).send({
-                message: 'Internal server error'
+                message: 'Internal server error',
+                token: newToken
             });
         });
+
 }
 
 /* Conversation remove participant (Needs token)

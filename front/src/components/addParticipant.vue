@@ -1,5 +1,5 @@
 <script setup>
-import AddParticipantModal from "@/components/addParticipantModal.vue";
+import AddParticipantModal from "@/modals/addParticipantModal.vue";
 import {ref} from "vue";
 import store from "@/store/store.js";
 
@@ -32,7 +32,7 @@ store.watch(
     <img alt="add participant icon" src="/icons/user-add.svg"/>
     <span>Ajouter un participant</span>
   </div>
-  <div v-if="showAddParticipantModal" class="addParticipantModal-overlay" @click.self="close">
+  <div v-if="showAddParticipantModal" class="modal-overlay" @click.self="close">
     <AddParticipantModal :users="users"/>
   </div>
 </template>
@@ -58,17 +58,5 @@ store.watch(
     color: var(--white-00);
     cursor: pointer;
   }
-}
-
-.addParticipantModal-overlay {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(15, 26, 42, 0.4);
 }
 </style>
