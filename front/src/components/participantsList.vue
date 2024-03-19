@@ -2,6 +2,7 @@
 import Participant from "@/components/participant.vue";
 import store from "@/store/store.js";
 import {reactive} from "vue";
+import AddParticipant from "@/components/addParticipant.vue";
 
 let participants;
 let data = reactive({
@@ -38,7 +39,7 @@ function copyToClipboard(payload) {
 <template>
   <div class="component">
     <div class="title">
-      <img src="/icons/users.svg" alt="conversation icon"/>
+      <img alt="conversation icon" src="/icons/user-group.svg"/>
       <span>Participants</span>
     </div>
     <div class="list">
@@ -50,6 +51,7 @@ function copyToClipboard(payload) {
                    @click="copyToClipboard('@' + participant.username)"
       />
     </div>
+    <AddParticipant v-if="data.userId === data.owner"/>
   </div>
 
 </template>
@@ -85,5 +87,6 @@ function copyToClipboard(payload) {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  height: 100%;
 }
 </style>

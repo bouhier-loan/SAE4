@@ -31,7 +31,7 @@ defineProps({
         <span class="username">@{{ user.username }}</span>
       </div>
     </div>
-    <img src="/icons/shield-exclamation.svg" alt="Conversation owner" v-if="participantIsOwner" class="owner"/>
+    <img v-if="participantIsOwner" alt="Conversation owner" class="owner" src="/icons/shield-check.svg"/>
     <span v-else-if="userIsOwner" class="kick" @click="console.log('TODO!')">✗</span>
   </div>
 </template>

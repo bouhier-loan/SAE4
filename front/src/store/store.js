@@ -5,7 +5,9 @@ export default createStore({
         conversationMessages: {},
         conversations: [],
         currentConversation: null,
-        users: []
+        users: [],
+        fetchMessages: true,
+        showAddParticipantModal: false
     },
     mutations: {
         updateCache(state, payload) {
@@ -19,6 +21,12 @@ export default createStore({
         },
         updateConversations(state, payload) {
             state.conversations = payload;
+        },
+        updateFetchMessages(state, payload) {
+            state.fetchMessages = payload;
+        },
+        showAddParticipantModal(state, payload) {
+            state.showAddParticipantModal = payload;
         }
     }
 })

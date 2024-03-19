@@ -40,6 +40,9 @@ function selectConversation(conversationId) {
 }
 
 store.watch(() => store.state.conversations, (newValue) => {
+  newValue.sort((a, b) => {
+    return a.lastUpdated < b.lastUpdated ? 1 : -1;
+  });
   data.conversations = newValue;
 });
 </script>

@@ -18,9 +18,13 @@ async function getMessages() {
     return;
   }
 
+  if (!store.state.fetchMessages) {
+    return;
+  }
+
   // If the user is not logged in or not in the route /dev, stop the function
   if (!localStorage.getItem('token') || router.currentRoute.value.path !== "/") {
-    clearInterval(getMessages)
+    store.commit('updateFetchMessages', false);
     return;
   }
   let messages = [];
@@ -45,10 +49,7 @@ async function getMessages() {
         responseData.messages.forEach(message => {
           message.senderUsername = store.state.users.find(user => user.id === message.senderId).username;
           message.senderColor = store.state.users.find(user => user.id === message.senderId).color;
-          let usersNotified = message.content.message.match(/@(\w+)/g);
-          if (usersNotified) {
-            message.isNotified = usersNotified.includes("@" + localStorage.getItem("username"));
-          }
+          message.isNotified = message.content.message.match(/@(\w+)/g)?.includes("@" + localStorage.getItem("username"));
 
           messages.push(message);
         });
@@ -56,7 +57,7 @@ async function getMessages() {
       })
       .catch(error => {
         console.error('Error:', error);
-        clearInterval(getMessages)
+        store.commit('updateFetchMessages', false);
       });
   store.commit('updateConversationId', conversationId);
 }

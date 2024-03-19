@@ -45,7 +45,7 @@ async function sendMessage() {
     // Clear the input
     document.querySelector(".messageBar textarea").value = "";
     data.message = "";
-    data.nbRows = 1;
+    autoResize()
     this.parent.$refs.lastMessage.scrollIntoView({ behavior: 'smooth' });
   })
 }
