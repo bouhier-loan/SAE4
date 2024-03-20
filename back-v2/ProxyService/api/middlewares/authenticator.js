@@ -1,6 +1,6 @@
-import axios from "axios";
+const axios = require('axios');
 
-export default async function authenticator(req, res, next) {
+async function authenticator(req, res, next) {
     try {
         const tmp = req.headers.authorization.split(' ');
         const user = tmp[0];
@@ -20,11 +20,12 @@ export default async function authenticator(req, res, next) {
 
         req.newToken = response.data.newToken;
         next();
+
     } catch(err) {
         return res.status(401).json(
             {message: 'Unauthorized'}
         );
     }
-
-    next()
 }
+
+module.exports = authenticator;

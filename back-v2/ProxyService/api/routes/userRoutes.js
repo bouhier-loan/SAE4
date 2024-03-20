@@ -1,7 +1,8 @@
 "use strict";
-import express from 'express';
-import {body} from 'express-validator';
-import userController from '../controllers/userController.js';
+const express = require('express');
+const { body } = require('express-validator');
+const userController = require('../controllers/userController');
+const authenticator = require('../middlewares/authenticator');
 
 const router = express.Router();
 
@@ -10,23 +11,25 @@ router.post(
         '/login',
         body('username').isString().notEmpty(),
         body('password').isString().notEmpty(),
-        async (req, res) => {await userController.login(req, res);}
+        async (req, res) => {await userController.login(req, res)}
 );
 
 router.route('/')
-    .post(async (req, res) => {
-        await userController.register(req, res);
-    })
-    .get(async (req, res) => {
-        await userController.getAllUsers(req, res);
-    });
+    .post(
+        body('username').isString().isLength({min: 5, max: 20}).escape(),
+        body('password').isString().isLength({min: 8}).escape(),
+        async (req, res) => {await userController.register(req, res)}
+    )
+    .get(
+        async (req, res) => {await userController.getAllUsers(req, res)}
+    );
 
-router.route('/:id')
-    .put(async (req, res) => {
-        await userController.updateUser(req, res);
-    })
-    .get(async (req, res) => {
-        await userController.getUser(req, res);
-    });
+router.put(
+    '/:id',
+    body('displayName').isString().optional().escape(),
+    body('password').isString().isLength({min:8}).optional().escape(),
+    authenticator,
+    async (req, res) => {await userController.updateUser(req, res);}
+)
 
-export default router;
+module.exports = router;

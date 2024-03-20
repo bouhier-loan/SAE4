@@ -1,15 +1,12 @@
-"use strict"
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import mongoose from "mongoose";
-import router from 'api/routes/userRoutes.js';
+const express = require('express');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const router = require('./api/routes/userRoutes');
 
-mongoose.connect(process.env.DATABASE_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true
-}).then(() => console.log("Connected to database"))
+dotenv.config();
+
+mongoose.connect(process.env.DATABASE_URL, {}).then(() => console.log("Connected to database"))
 
 const app = express();
 dotenv.config();

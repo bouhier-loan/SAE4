@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.post(
     '/',
-    body('username').isLength({min: 5, max: 20}).escape(),
-    body('password').isLength({min: 8}).escape(),
+    body('username').isString().isLength({min: 5, max: 20}).escape(),
+    body('password').isString().isLength({min: 8}).escape(),
     async (req, res) => userController.createUser(req, res)
 );
 router.get(
@@ -16,8 +16,8 @@ router.get(
 );
 router.put(
     '/:id',
-    body('displayName').isLength({min: 1, max: 20}).escape(),
-    body('password').isLength({min:8}).escape(),
+    body('displayName').isString().isLength({min: 1, max: 20}).escape(),
+    body('password').isString().isLength({min:8}).escape(),
     async (req, res) => userController.updateUser(req, res)
 );
 router.post(
@@ -26,12 +26,12 @@ router.post(
 );
 router.post(
     '/:id/token/check',
-    body('token').isLength({min: 1}).escape(),
+    body('token').isString().isLength({min: 1}).escape(),
     async (req, res) => userController.checkToken(req, res)
 );
 router.post(
     '/:id/password',
-    body('password').isLength({min: 8}).escape(),
+    body('password').isString().isLength({min: 8}).escape(),
     async (req, res) => userController.checkPassword(req, res)
 );
 

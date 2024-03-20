@@ -3,6 +3,7 @@ const AccessToken = require('../models/accessToken');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const {matchedData} = require("express-validator");
+const dateShift = require('../../tools/dateShift');
 
 /* Valid colors for users */
 const colors = [
@@ -74,7 +75,7 @@ async function createToken(req, res) {
 
     /* Create a new token */
     const token = uuidv4();
-    const expires = new Date().shift(process.env.TOKEN_VALIDITY);
+    const expires = dateShift(new Date(),process.env.TOKEN_VALIDITY);
 
     /* Create the token */
     const accessToken = new AccessToken({
@@ -154,7 +155,7 @@ async function checkToken(req, res) {
 
     /* Create a new token */
     const token = uuidv4();
-    const expires = new Date().shift(process.env.TOKEN_VALIDITY);
+    const expires = dateShift(new Date(),process.env.TOKEN_VALIDITY);
 
     /* Create the token */
     const newAccessToken = new AccessToken({

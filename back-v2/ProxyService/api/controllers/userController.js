@@ -1,5 +1,7 @@
-const {matchedData} = require("express-validator");
+const { matchedData } = require('express-validator');
 const axios = require('axios');
+
+const USER_BASE_URL = process.env.API_URL + process.env.USER_SERVICE_PORT + '/users';
 
 /* User login
     * @param {Object} req - request object
@@ -19,23 +21,29 @@ async function login(req, res) {
     let response;
 
     /* Get the user */
-    response = await axios.post(`http://localhost:${process.env.USER_SERVICE_PORT}/users/login`, data)
+    response = await axios.get(USER_BASE_URL, {params: {username: data.username}})
 
     if (response.status !== 200) {
         return res.status(response.status).send(response.data);
     }
+    if (response.data.users.length === 0) {
+        return res.status(404).send({
+            message: 'User not found'
+        });
+    }
 
-    status.user = response.data.body;
+    status.user = response.data.users[0];
+
 
     /* Check the user's password */
-    response = await axios.post(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${status.user.id}/password`, data)
+    response = await axios.post(USER_BASE_URL + `/${status.user.id}/password`, data)
 
     if (response.status !== 200) {
         return res.status(response.status).send(response.data);
     }
 
     /* Create a token */
-    response = await axios.post(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${status.user.id}/token`, data)
+    response = await axios.post(USER_BASE_URL + `/${status.user.id}/token`, data)
 
     if (response.status !== 200) {
         return res.status(response.status).send(response.data);
@@ -51,30 +59,38 @@ async function login(req, res) {
     * @param {Object} req - request object
     * @param {String} req.body.username - username
     * @param {String} req.body.password - password
-    * @param {String} req.body.displayName - display name (optional)
     * @param {Object} res - response object
     * @return {Object} - The response object
  */
 async function register(req, res) {
-    /* Check if the request is valid */
-    if (!req.body.username || !req.body.password) {
-        return res.status(400).send({
-            message: 'Invalid request'
-        });
+    const data = matchedData(req);
+
+    const status = {
+        user: null,
+        token: null
     }
 
+    let response;
     /* Create the user */
-    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(req.body)
-    })
-        .then(response => { return response.json() })
-        .then(data => {
-            return res.status(data.status).send(data.body);
-        });
+    response = await axios.post(USER_BASE_URL, data)
+
+    if (response.status !== 201) {
+        return res.status(response.status).send(response.data);
+    }
+
+    status.user = response.data.user;
+
+    /* Create a token */
+    response = await axios.post(USER_BASE_URL + `/${status.user.id}/token`)
+
+    if (response.status !== 201) {
+        return res.status(response.status).send(response.data);
+    }
+
+    status.token = response.data.body.token;
+
+    /* Return the user and token */
+    return res.status(201).send(status);
 }
 
 /* User update (Needs token)
@@ -87,79 +103,25 @@ async function register(req, res) {
     * @return {Object} - The response object
  */
 async function updateUser(req, res) {
-    /* Check if the request is valid */
-    if (!req.body.displayName || !req.body.password || !req.body.token) {
-        return res.status(400).send({
-            message: 'Invalid request'
-        });
+    const data = matchedData(req);
+
+    const status = {
+        user: null,
+        token: req.newToken
     }
 
-    /* Check if the token is valid */
-    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${req.params.id}/token`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({token: req.body.token})
-    })
-        .then(response => { return response.json() })
-        .then(data => {
-            if (data.message === 'Invalid token') {
-                return res.status(401).send({
-                    message: 'Invalid token'
-                });
-            }
+    let response;
+    /* Update the user */
+    response = await axios.put(USER_BASE_URL + `/${req.params.id}`, data)
 
-            /* Update the user */
-            fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${req.params.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({displayName: req.body.displayName, password: req.body.password})
-            })
-                .then(response => { return response.json() })
-                .then(data => {
-                    return res.status(data.status).send(data.body);
-                })
-                .catch(error => {
-                    console.log(error);
-                    return res.status(500).send({
-                        message: 'Internal server error'
-                    });
-                });
-        })
-        .catch(error => {
-            console.log(error);
-            return res.status(500).send({
-                message: 'Internal server error'
-            });
-        });
-}
+    if (response.status !== 200) {
+        return res.status(response.status).send(response.data);
+    }
 
-/* User get
-    * @param {Object} req - request object
-    * @param {String} req.params.id - user id
-    * @param {Object} res - response object
-    * @return {Object} - The response object
- */
-async function getUser(req, res) {
-    /* Get the user */
-    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users/${req.params.id}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }})
-        .then(response => { return response.json() })
-        .then(data => {
-            return res.status(data.status).send(data.body);
-        })
-        .catch(error => {
-            console.log(error);
-            return res.status(500).send({
-                message: 'Internal server error'
-            });
-        });
+    status.user = response.data.user;
+
+    /* Return the updated user */
+    return res.status(200).send(status);
 }
 
 /* User get all
@@ -168,31 +130,27 @@ async function getUser(req, res) {
     * @return {Object} - The response object
  */
 async function getAllUsers(req, res) {
+    const status = {
+        users: null
+    }
+
+    let response;
     /* Get all users */
-    fetch(`http://localhost:${process.env.USER_SERVICE_PORT}/users`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-        .then(response => {
-            return response.json()
-        })
-        .then(data => {
-            return res.status(200).send(data);
-        })
-        .catch(error => {
-            console.log(error);
-            return res.status(500).send({
-                message: 'Internal server error'
-            });
-        });
+    response = await axios.get(USER_BASE_URL, {params: {username: req.query.username}})
+
+    if (response.status !== 200) {
+        return res.status(response.status).send(response.data);
+    }
+
+    status.users = response.data.users;
+
+    /* Return all users */
+    return res.status(200).send(status);
 }
 
 module.exports = {
     login,
     register,
     updateUser,
-    getUser,
     getAllUsers
 };
