@@ -1,7 +1,8 @@
-const Conversation = require('../models/conversation');
-const Message = require('../models/message');
+const Conversation = require('../models/conversation.js');
+const Message = require('../models/message.js');
 
 const { v4: uuidv4 } = require('uuid');
+const {matchedData} = require("express-validator");
 
 /* Valid colors for conversations */
 const colors = [
@@ -17,193 +18,6 @@ const colors = [
     '4A4A4A',
 ]
 
-/* Create a new message
- * @param {Object} req - The request object
- * @param {String} req.body.userId - The user's id
- * @param {String} req.body.conversationId - The conversation's id
- * @param {Object} req.body.content - The message's content
- * @param {String} req.body.content.message - The message's text
- * @param {Object} res - The response object
- * @return {Object} - The response object
- */
-async function createMessage(req, res) {
-    /* Check if the request is valid */
-    if (!req.body.userId || !req.body.conversationId || !req.body.content) {
-        return res.status(400).json(
-            {
-                message: 'Invalid request'
-            }
-        );
-    }
-
-    /* Check if the conversation exists */
-    let conversation = await Conversation.findOne({id: req.body.conversationId});
-    if (!conversation) {
-        return res.status(404).json(
-            {
-                message: 'Conversation not found',
-            }
-        );
-    }
-
-
-    /* Check if the user is a participant in the conversation */
-    if (!conversation.participants.includes(req.body.userId)) {
-        return res.status(403).json(
-            {
-                message: 'The user is not a participant in the conversation',
-            }
-        );
-    }
-
-    /* Create a new message */
-    let message = new Message({
-        id: uuidv4(),
-        conversationId: conversation.id,
-        senderId: req.body.userId,
-        content: req.body.content
-    });
-
-    /* Save the message */
-    await message.save();
-
-    /* Update the conversation's lastUpdated field */
-    conversation.lastUpdated = new Date();
-    await conversation.save();
-
-    /* Remove _id and __v from the message */
-    let { _id, __v, ...messageWithoutIdAndV } = message.toJSON();
-
-    /* Send the response */
-    return res.status(200).json(
-        {
-            message: 'Message created',
-            createdMessage: messageWithoutIdAndV,
-        }
-    );
-}
-
-/* Modify message
- * @param {Object} req - The request object
- * @param {String} req.params.id - The message's id
- * @param {Object} req.body.content - The message's content
- * @param {String} req.body.content.message - The message's text
- * @param {Object} res - The response object
- */
-async function updateMessage(req, res) {
-    /* Check if the request is valid */
-    if (!req.body.content.message) {
-        return res.status(400).json(
-            {
-                message: 'Invalid request'
-            }
-        );
-    }
-
-    /* Check if the message exists */
-    let message = await Message.findOne({id: req.params.id});
-    if (!message) {
-        return res.status(404).json(
-            {
-                message: 'Message not found',
-            }
-        );
-    }
-
-    /* Modify the message */
-    message.content = req.body.content;
-    message.modified = true;
-    await message.save();
-
-    /* Remove _id and __v from the message */
-    let { _id, __v, ...messageWithoutIdAndV } = message.toJSON();
-
-    /* Send the response */
-    return res.status(200).json(
-        {
-            message: 'Message modified',
-            modifiedMessage: messageWithoutIdAndV,
-        }
-    );
-}
-
-/* Delete a message
- * @param {Object} req - The request object
- * @param {String} req.params.id - The message's id
- * @param {Object} res - The response object
- */
-async function deleteMessage(req, res) {
-    /* Check if the message exists */
-    let message = await Message.findOne({id: req.params.id});
-    if (!message) {
-        return res.status(404).json(
-            {
-                message: 'Message not found',
-            }
-        );
-    }
-    /* Delete the message */
-    await message.deleteOne();
-
-    /* Send the response */
-    return res.status(200).json(
-        {
-            message: 'Message deleted',
-        }
-    );
-}
-
-/* Get all the messages
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @return {Object} - The response object
- */
-async function getMessages(req, res) {
-    /* Get all the messages */
-    let messages = await Message.find();
-
-    /* Remove _id and __v from the messages */
-    let messagesWithoutIdAndV = messages.map(message => {
-        let { _id, __v, ...messageWithoutIdAndV } = message.toJSON();
-        return messageWithoutIdAndV;
-    });
-
-    /* Send the response */
-    return res.status(200).json(
-        {
-            messages: messagesWithoutIdAndV,
-        }
-    );
-}
-
-/* Get a message
- * @param {Object} req - The request object
- * @param {String} req.params.id - The message's id
- * @param {Object} res - The response object
- * @return {Object} - The response object
- */
-async function getMessage(req, res) {
-    /* Check if the message exists */
-    let message = await Message.findOne({id: req.params.id});
-    if (!message) {
-        return res.status(404).json(
-            {
-                message: 'Message not found',
-            }
-        );
-    }
-    
-    /* Remove _id and __v from the message */
-    let { _id, __v, ...messageWithoutIdAndV } = message.toJSON();
-    
-    /* Send the response */
-    return res.status(200).json(
-        {
-            message: messageWithoutIdAndV,
-        }
-    );
-}
-
 /* Create a conversation
  * @param {Object} req - The request object
  * @param {String} req.body.ownerId - The owner's id
@@ -212,21 +26,14 @@ async function getMessage(req, res) {
  * @param {Object} res - The response object
  */
 async function createConversation(req, res) {
-    /* Check if the request is valid */
-    if (!req.body.ownerId || !req.body.participants || !req.body.name) {
-        return res.status(400).json(
-            {
-                message: 'Invalid request'
-            }
-        );
-    }
+    const data = matchedData(req);
 
     /* Create a new conversation */
     let conversation = new Conversation({
         id: uuidv4(undefined, undefined, undefined),
-        ownerId: req.body.ownerId,
-        participants: req.body.participants,
-        name: req.body.name,
+        ownerId: data.ownerId,
+        participants: data.participants,
+        name: data.name,
         lastUpdated: new Date(),
         color: colors[Math.floor(Math.random() * colors.length)]
     });
@@ -253,14 +60,7 @@ async function createConversation(req, res) {
  * @param {Object} res - The response object
  */
 async function updateConversation(req, res) {
-    /* Check if the request is valid */
-    if (!req.body.name) {
-        return res.status(400).json(
-            {
-                message: 'Invalid request'
-            }
-        );
-    }
+    const data = matchedData(req);
 
     /* Check if the conversation exists */
     let conversation = await Conversation.findOne({id: req.params.id});
@@ -273,7 +73,7 @@ async function updateConversation(req, res) {
     }
 
     /* Modify the conversation */
-    conversation.name = req.body.name;
+    conversation.name = data.name;
     await conversation.save();
 
     /* Remove _id and __v from the conversation */
@@ -383,14 +183,7 @@ async function getConversation(req, res) {
     * @return {Object} - The response object
  */
 async function addParticipant(req, res) {
-    /* Check if the request is valid */
-    if (!req.body.participantId) {
-        return res.status(400).json(
-            {
-                message: 'Invalid request'
-            }
-        );
-    }
+    const data = matchedData(req);
 
     /* Check if the conversation exists */
     let conversation = await Conversation.findOne({id: req.params.id});
@@ -403,7 +196,7 @@ async function addParticipant(req, res) {
     }
 
     /* Add the participant to the conversation */
-    conversation.participants.push(req.body.participantId);
+    conversation.participants.push(data.participantId);
     await conversation.save();
 
     /* Remove _id and __v from the conversation */
@@ -426,14 +219,7 @@ async function addParticipant(req, res) {
     * @return {Object} - The response object
  */
 async function removeParticipant(req, res) {
-    /* Check if the request is valid */
-    if (!req.body.participantId) {
-        return res.status(400).json(
-            {
-                message: 'Invalid request'
-            }
-        );
-    }
+    const data = matchedData(req);
 
     /* Check if the conversation exists */
     let conversation = await Conversation.findOne({id: req.params.id});
@@ -446,7 +232,7 @@ async function removeParticipant(req, res) {
     }
 
     /* Remove the participant from the conversation */
-    conversation.participants = conversation.participants.filter(participant => participant !== req.body.participantId);
+    conversation.participants = conversation.participants.filter(participant => participant !== data.participantId);
     await conversation.save();
 
     /* Remove _id and __v from the conversation */
@@ -511,13 +297,6 @@ async function getParticipants(req, res) {
 }
 
 module.exports = {
-    /* Message */
-    createMessage,
-    updateMessage,
-    deleteMessage,
-    getMessages,
-    getMessage,
-    /* Conversation */
     createConversation,
     updateConversation,
     deleteConversation,

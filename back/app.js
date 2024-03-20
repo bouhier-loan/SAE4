@@ -11,7 +11,7 @@ console.log("Connected to database")
 
 /* User routes */
 
-const userRoutes = require('./routes/userRoutes')
+const userRoutes = require('../back-v2/UserService/api/routes/userRoutes')
 
 userapp = express()
 userapp.use(express.json())
@@ -25,7 +25,7 @@ console.log('User server started on port', process.env.USER_SERVICE_PORT || '300
 
 /* Message routes */
 
-const messageRoutes = require('./routes/messageRoutes')
+const messageRoutes = require('../back-v2/ConversationService/api/routes/messageRoutes')
 
 messageapp = express()
 messageapp.use(express.json())

@@ -1,0 +1,22 @@
+# Use official node image from docker at version 20
+FROM node:20
+
+# Create app dir
+RUN mkdir -p /usr/src/app
+
+# Change work dir as the created one
+WORKDIR /usr/src/app
+
+# Copy local file into the container in the app dir
+COPY . .
+
+# Install dependencies
+RUN npm i
+RUN npm i -g nodemon pm2
+
+# Expose port 8081
+EXPOSE 8081
+
+# Run the service
+CMD ["pm2-runtime", "start", "--name", "service", "--", "nodemon", "server.js"]
+
