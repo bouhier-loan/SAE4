@@ -1,0 +1,148 @@
+swagger: '2.0'
+info:
+  title: Conversation Service API
+  version: '1.0'
+host: 'localhost:3000'
+schemes:
+  - http
+paths:
+  /conversations:
+    get:
+      summary: Get all conversations
+      responses:
+        '200':
+          description: An array of conversations
+    post:
+      summary: Create a new conversation
+      parameters:
+        - in: body
+          name: conversation
+          schema:
+            $ref: '#/definitions/Conversation'
+      responses:
+        '200':
+          description: Conversation created
+  /conversations/{id}:
+    get:
+      summary: Get a specific conversation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: A conversation
+    put:
+      summary: Update a conversation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: body
+          name: conversation
+          schema:
+            $ref: '#/definitions/Conversation'
+      responses:
+        '200':
+          description: Conversation updated
+    delete:
+      summary: Delete a conversation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Conversation deleted
+  /messages:
+    get:
+      summary: Get all messages
+      responses:
+        '200':
+          description: An array of messages
+    post:
+      summary: Create a new message
+      parameters:
+        - in: body
+          name: message
+          schema:
+            $ref: '#/definitions/Message'
+      responses:
+        '200':
+          description: Message created
+  /messages/{id}:
+    get:
+      summary: Get a specific message
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: A message
+    put:
+      summary: Update a message
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+        - in: body
+          name: message
+          schema:
+            $ref: '#/definitions/Message'
+      responses:
+        '200':
+          description: Message updated
+    delete:
+      summary: Delete a message
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Message deleted
+definitions:
+  Conversation:
+    type: object
+    properties:
+      id:
+        type: string
+      ownerId:
+        type: string
+      participants:
+        type: array
+        items:
+          type: string
+      lastUpdated:
+        type: string
+        format: date-time
+      name:
+        type: string
+      color:
+        type: string
+  Message:
+    type: object
+    properties:
+      id:
+        type: string
+      senderId:
+        type: string
+      content:
+        type: object
+        properties:
+          message:
+            type: string
+      conversationId:
+        type: string
+      date:
+        type: string
+        format: date-time
+      modified:
+        type: boolean

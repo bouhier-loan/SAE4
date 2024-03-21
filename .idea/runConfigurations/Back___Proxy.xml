@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Back - Proxy" type="NodeJSConfigurationType" path-to-js-file="server.js" working-dir="$PROJECT_DIR$/back-v2/ProxyService">
+  <configuration default="false" name="Back - Proxy" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/back/ProxyService/server.js" working-dir="$PROJECT_DIR$/back/ProxyService">
     <method v="2" />
   </configuration>
 </component>
