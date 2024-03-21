@@ -1,0 +1,238 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: 'Proxy Service API'
+  description: 'API for managing users, conversations and messages'
+host: 'localhost:3000'
+basePath: '/'
+schemes:
+  - 'http'
+consumes:
+  - 'application/json'
+produces:
+  - 'application/json'
+paths:
+  /users:
+    post:
+      summary: 'Create a new user'
+      operationId: 'register'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User object that needs to be added'
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '201':
+          description: 'User created'
+        '400':
+          description: 'Invalid input'
+    get:
+      summary: 'Get all users'
+      operationId: 'getAllUsers'
+      responses:
+        '200':
+          description: 'successful operation'
+          schema:
+            type: 'array'
+            items:
+              $ref: '#/definitions/User'
+        '400':
+          description: 'Invalid status value'
+  /users/{userId}:
+    put:
+      summary: 'Update an existing user'
+      operationId: 'updateUser'
+      security:
+        - Bearer: []
+      parameters:
+        - in: 'path'
+          name: 'userId'
+          description: 'ID of user to return'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'User object that needs to be updated'
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: 'User updated'
+        '400':
+          description: 'Invalid ID supplied'
+        '404':
+          description: 'User not found'
+  /conversations:
+    post:
+      summary: 'Create a new conversation'
+      operationId: 'createConversation'
+      security:
+        - Bearer: []
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Conversation object that needs to be added'
+          required: true
+          schema:
+            $ref: '#/definitions/Conversation'
+      responses:
+        '201':
+          description: 'Conversation created'
+        '400':
+          description: 'Invalid input'
+    get:
+      summary: 'Get all conversations'
+      operationId: 'getAllConversations'
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: 'successful operation'
+          schema:
+            type: 'array'
+            items:
+              $ref: '#/definitions/Conversation'
+        '400':
+          description: 'Invalid status value'
+  /conversations/{conversationId}:
+    put:
+      summary: 'Update an existing conversation'
+      operationId: 'updateConversation'
+      security:
+        - Bearer: []
+      parameters:
+        - in: 'path'
+          name: 'conversationId'
+          description: 'ID of conversation to return'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'Conversation object that needs to be updated'
+          required: true
+          schema:
+            $ref: '#/definitions/Conversation'
+      responses:
+        '200':
+          description: 'Conversation updated'
+        '400':
+          description: 'Invalid ID supplied'
+        '404':
+          description: 'Conversation not found'
+    delete:
+      summary: 'Deletes a conversation'
+      operationId: 'deleteConversation'
+      security:
+        - Bearer: []
+      parameters:
+        - in: 'path'
+          name: 'conversationId'
+          description: 'Conversation id to delete'
+          required: true
+          type: 'string'
+      responses:
+        '200':
+          description: 'Conversation deleted'
+        '400':
+          description: 'Invalid ID supplied'
+        '404':
+          description: 'Conversation not found'
+  /messages:
+    post:
+      summary: 'Send a new message'
+      operationId: 'sendMessage'
+      security:
+        - Bearer: []
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Message object that needs to be sent'
+          required: true
+          schema:
+            $ref: '#/definitions/Message'
+      responses:
+        '201':
+          description: 'Message sent'
+        '400':
+          description: 'Invalid input'
+  /messages/{messageId}:
+    put:
+      summary: 'Edit an existing message'
+      operationId: 'editMessage'
+      security:
+        - Bearer: []
+      parameters:
+        - in: 'path'
+          name: 'messageId'
+          description: 'ID of message to edit'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'Message object that needs to be updated'
+          required: true
+          schema:
+            $ref: '#/definitions/Message'
+      responses:
+        '200':
+          description: 'Message updated'
+        '400':
+          description: 'Invalid ID supplied'
+        '404':
+          description: 'Message not found'
+    delete:
+      summary: 'Deletes a message'
+      operationId: 'deleteMessage'
+      security:
+        - Bearer: []
+      parameters:
+        - in: 'path'
+          name: 'messageId'
+          description: 'Message id to delete'
+          required: true
+          type: 'string'
+      responses:
+        '200':
+          description: 'Message deleted'
+        '400':
+          description: 'Invalid ID supplied'
+        '404':
+          description: 'Message not found'
+definitions:
+  User:
+    type: 'object'
+    properties:
+      id:
+        type: 'string'
+      username:
+        type: 'string'
+      password:
+        type: 'string'
+  Conversation:
+    type: 'object'
+    properties:
+      id:
+        type: 'string'
+      participants:
+        type: 'array'
+        items:
+          type: 'string'
+      name:
+        type: 'string'
+  Message:
+    type: 'object'
+    properties:
+      id:
+        type: 'string'
+      content:
+        type: 'object'
+        properties:
+          message:
+            type: 'string'
+      senderId:
+        type: 'string'
+      conversationId:
+        type: 'string'
