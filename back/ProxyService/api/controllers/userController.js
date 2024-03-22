@@ -1,6 +1,9 @@
 const { matchedData } = require('express-validator');
 const axios = require('axios');
+const {configDotenv} = require("dotenv");
 
+
+configDotenv()
 const USER_BASE_URL = process.env.API_URL + process.env.USER_SERVICE_PORT + '/users';
 
 /* User login
@@ -14,7 +17,7 @@ async function login(req, res) {
     const data = matchedData(req);
 
     let status = {
-        user: null,
+        userId: null,
         token: null
     }
 
@@ -32,24 +35,24 @@ async function login(req, res) {
         });
     }
 
-    status.user = response.data.users[0];
+    status.userId = response.data.users[0].id;
 
 
     /* Check the user's password */
-    response = await axios.post(USER_BASE_URL + `/${status.user.id}/password`, data)
+    response = await axios.post(USER_BASE_URL + `/${status.userId}/password`, data)
 
     if (response.status !== 200) {
         return res.status(response.status).send(response.data);
     }
 
     /* Create a token */
-    response = await axios.post(USER_BASE_URL + `/${status.user.id}/token`, data)
+    response = await axios.post(USER_BASE_URL + `/${status.userId}/token`, data)
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
         return res.status(response.status).send(response.data);
     }
 
-    status.token = response.data.body.token;
+    status.token = response.data.token;
 
     /* Return the user and token */
     return res.status(200).send(status);

@@ -13,12 +13,12 @@ const CONVERSATION_BASE_URL = process.env.API_URL + process.env.CONVERSATION_SER
 async function getAllConversations(req, res) {
     const status = {
         conversations: [],
-        userId: req.userId,
+        token: req.newToken
     }
 
     let response;
     response = await axios.get(CONVERSATION_BASE_URL, {params: {userId: req.userId}})
-    status.conversations = response.data;
+    status.conversations = response.data.conversations;
 
     return res.status(200).json(status);
 }
@@ -106,12 +106,13 @@ async function deleteConversation(req, res) {
  */
 async function getConversationMessages(req, res) {
     const status = {
-        messages: []
+        messages: [],
+        token: req.newToken
     }
 
     let response;
     response = await axios.get(CONVERSATION_BASE_URL + '/' + req.params.id + '/messages')
-    status.messages = response.data;
+    status.messages = response.data.messages;
 
     return res.status(200).json(status);
 }

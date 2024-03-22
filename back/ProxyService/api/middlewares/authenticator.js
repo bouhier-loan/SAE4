@@ -7,7 +7,7 @@ async function authenticator(req, res, next) {
         const token = tmp[1];
 
         const response = await axios.post(
-            process.env.API_URL + process.env.USER_SERVICE_PORT + '/api/users/' + user + '/token/check',
+            process.env.API_URL + process.env.USER_SERVICE_PORT + '/users/' + user + '/token/check',
             {
                 token: token
             });

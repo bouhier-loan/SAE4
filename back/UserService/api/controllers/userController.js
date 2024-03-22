@@ -134,6 +134,9 @@ async function checkPassword(req, res) {
  */
 async function checkToken(req, res) {
     const data = matchedData(req)
+    console.log('----')
+    console.log('Token: ' + data.token)
+    console.log('User id: ' + req.params.id)
 
     /* Check if the token exists */
     const accessToken = await AccessToken.findOne({token: data.token, userId: req.params.id});
@@ -142,10 +145,12 @@ async function checkToken(req, res) {
             {message: 'Invalid token'}
         );
     }
+    console.log('Access token' + accessToken)
 
     /* Check if the token is expired */
     if (accessToken.expires < Date.now()) {
         await AccessToken.deleteOne({token: data.token, userId: req.params.id});
+        console.log('Token expired')
         return res.status(400).json(
             {message: 'Token expired'}
         );
@@ -163,6 +168,7 @@ async function checkToken(req, res) {
         userId: req.params.id,
         expires: expires
     });
+    console.log('New access token' + newAccessToken)
 
     /* Save the token */
     await newAccessToken.save();

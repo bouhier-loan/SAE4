@@ -20,7 +20,8 @@ fetch('http://localhost:8000/conversations', {
     }
     )
     .then(responseData => {
-      if (responseData.message === "Invalid token") {
+      if (responseData.message === "Unauthorized") {
+        localStorage.removeItem("token");
         router.push('/login');
       }
       if (responseData.token) {

@@ -35,9 +35,8 @@ async function sendMessage() {
   })
   .then(response => response.json())
   .then(data => {
-    if (!data.token) {
-      console.log("Invalid token");
-      localStorage.setItem("token", null);
+    if (data.message === "Unauthorized") {
+      localStorage.removeItem("token");
       router.push('/login');
     }
     localStorage.setItem("token", data.token);
