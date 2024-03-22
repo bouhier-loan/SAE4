@@ -41,7 +41,8 @@ async function createMessage(req, res) {
         id: uuidv4(),
         conversationId: conversation.id,
         senderId: data.userId,
-        content: data.content
+        content: data.content,
+        seenBy: []
     });
 
     /* Save the message */

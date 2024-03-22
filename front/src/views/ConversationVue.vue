@@ -28,16 +28,19 @@ async function getMessages() {
     return;
   }
   let messages = [];
-  fetch('http://localhost:8000/conversations/' + conversationId + '/messages', {
+
+  let fetch_messages = store.state.conversationMessages.length > 0;
+  let url_end = fetch_messages ? "/fetch" : "";
+  fetch('http://localhost:8000/conversations/' + conversationId + '/messages' + url_end, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "Authorization": localStorage.getItem("userId") + " " + localStorage.getItem('token'),
-    },
+    }
   })
       .then(response => response.json())
       .then(responseData => {
-        console.log(responseData)
+        //console.log(responseData)
         if (responseData.message === "Unauthorized") {
           localStorage.removeItem("token");
           router.push('/login');
@@ -66,7 +69,7 @@ async function getMessages() {
 
 /* Call getMessages() once and then every second in the background */
 getMessages();
-setInterval(getMessages, 1000);
+setInterval(getMessages, 10000);
 </script>
 
 <template>

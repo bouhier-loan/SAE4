@@ -1,5 +1,8 @@
 const { matchedData } = require('express-validator');
 const axios = require('axios');
+const dotenv = require('dotenv')
+
+dotenv.config()
 
 const CONVERSATION_BASE_URL = process.env.API_URL + process.env.CONVERSATION_SERVICE_PORT + '/messages';
 
@@ -12,11 +15,19 @@ const CONVERSATION_BASE_URL = process.env.API_URL + process.env.CONVERSATION_SER
  */
 async function sendMessage(req, res) {
     const data = matchedData(req);
+    data.userId = req.userId;
+
+    const status = {
+        token: req.newToken
+    }
 
     let response;
     response = await axios.post(CONVERSATION_BASE_URL, data)
+    if (response.status !== 200) {
+        return res.status(response.status).json(response.data)
+    }
 
-    return res.status(response.status).json(response.data);
+    return res.status(200).json(status);
 }
 
 /* Message edit (needs token)

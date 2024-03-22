@@ -15,8 +15,16 @@ router.get(
 );
 router.get(
     '/:id/messages',
+    body('userId').isString().notEmpty().withMessage('User id must be a string'),
     async (req, res) => { await conversationController.getConversationMessages(req, res) }
 );
+
+router.get(
+    '/:id/messages/fetch',
+    body('userId').isString().notEmpty().withMessage('User id must be a string'),
+    async (req, res) => { await conversationController.getUnreadMessages(req, res) }
+);
+
 router.post(
     '/',
     body('participants').isArray().withMessage('Participants must be an array'),

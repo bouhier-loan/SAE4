@@ -45,7 +45,11 @@ async function sendMessage() {
     document.querySelector(".messageBar textarea").value = "";
     data.message = "";
     autoResize()
-    this.parent.$refs.lastMessage.scrollIntoView({ behavior: 'smooth' });
+
+    let lastMessage = document.querySelector('[id="lastMessage"]');
+    if (lastMessage) {
+      lastMessage.scrollIntoView({behavior: "smooth", block: "end"});
+    }
   })
 }
 

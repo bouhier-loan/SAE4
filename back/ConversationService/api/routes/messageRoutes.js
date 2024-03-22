@@ -7,7 +7,7 @@ const {body} = require("express-validator");
 /* Messages */
 router.route('/')
     .post(
-        body('senderId').isString().notEmpty(),
+        body('userId').isString().notEmpty(),
         body('conversationId').isString().notEmpty(),
         body('content').isObject().notEmpty(),
         body('content.message').isString().notEmpty().escape(),

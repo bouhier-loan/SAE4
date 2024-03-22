@@ -141,7 +141,7 @@ async function checkToken(req, res) {
     /* Check if the token exists */
     const accessToken = await AccessToken.findOne({token: data.token, userId: req.params.id});
     if (!accessToken) {
-        return res.status(400).json(
+        return res.status(401).json(
             {message: 'Invalid token'}
         );
     }
@@ -151,7 +151,7 @@ async function checkToken(req, res) {
     if (accessToken.expires < Date.now()) {
         await AccessToken.deleteOne({token: data.token, userId: req.params.id});
         console.log('Token expired')
-        return res.status(400).json(
+        return res.status(401).json(
             {message: 'Token expired'}
         );
     }

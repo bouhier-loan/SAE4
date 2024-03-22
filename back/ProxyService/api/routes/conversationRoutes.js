@@ -56,6 +56,12 @@ router.route('/:id/messages')
         async (req, res) => {await conversationController.getConversationMessages(req, res);}
     );
 
+router.route('/:id/messages/fetch')
+    .get(
+        authenticator,
+        async (req, res) => {await conversationController.getUnreadMessages(req, res);}
+    );
+
 router.route('/:id/participants')
     .post(
         authenticator,

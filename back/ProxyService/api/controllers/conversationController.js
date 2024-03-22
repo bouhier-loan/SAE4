@@ -23,7 +23,7 @@ async function getAllConversations(req, res) {
     return res.status(200).json(status);
 }
 
-/* Conversation create
+/* Conversation create (Needs token)
     * @param {Object} req - request object
     * @param {String} req.headers.authorization - userId + token
     * @param {Object} req.body - request body
@@ -36,7 +36,8 @@ async function createConversation(req, res) {
     const data = matchedData(req);
 
     const status = {
-        conversation: null
+        conversation: null,
+        token: req.newToken
     }
 
     let response;
@@ -60,7 +61,8 @@ async function updateConversation(req, res) {
     const data = matchedData(req);
 
     const status = {
-        conversation: null
+        conversation: null,
+        token: req.newToken
     }
 
     let response;
@@ -80,7 +82,8 @@ async function updateConversation(req, res) {
  */
 async function deleteConversation(req, res) {
     const status = {
-        conversation: null
+        conversation: null,
+        token: req.newToken
     }
 
     let response;
@@ -111,10 +114,32 @@ async function getConversationMessages(req, res) {
     }
 
     let response;
-    response = await axios.get(CONVERSATION_BASE_URL + '/' + req.params.id + '/messages')
+    response = await axios.get(CONVERSATION_BASE_URL + '/' + req.params.id + '/messages', {params: {userId: req.userId}})
     status.messages = response.data.messages;
 
     return res.status(200).json(status);
+}
+
+/* Conversation get unread messages (Needs token)
+    * @param {Object} req - request object
+    * @param {String} req.headers.authorization - userId + token
+    * @param {Object} req.params - request parameters
+    * @param {String} req.params.id - conversation id
+    * @param {Object} res - response object
+    * @return {Object} - The response object
+ */
+async function getUnreadMessages(req, res) {
+    const status = {
+        messages: [],
+        token: req.newToken
+    }
+
+    let response;
+    response = await axios.get(CONVERSATION_BASE_URL + '/' + req.params.id + '/messages/fetch', {params: {userId: req.userId}})
+    status.messages = response.data.messages;
+
+    return res.status(200).json(status);
+
 }
 
 /* Conversation add participant (Needs token)
@@ -131,7 +156,8 @@ async function addParticipant(req, res) {
     const data = matchedData(req);
 
     const status = {
-        conversation: null
+        conversation: null,
+        token: req.newToken
     }
 
     let response;
@@ -152,7 +178,8 @@ async function addParticipant(req, res) {
  */
 async function removeParticipant(req, res) {
     const status = {
-        conversation: null
+        conversation: null,
+        token: req.newToken
     }
 
     let response;
@@ -168,6 +195,7 @@ module.exports = {
     updateConversation,
     deleteConversation,
     getConversationMessages,
+    getUnreadMessages,
     addParticipant,
     removeParticipant
 }

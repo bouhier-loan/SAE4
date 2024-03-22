@@ -1,4 +1,4 @@
-back-v2/ProxyService/.env
-back-v2/UserService/.env
-back-v2/ConversationService/.env
+back/ProxyService/.env
+back/UserService/.env
+back/ConversationService/.env
 front/.env

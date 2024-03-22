@@ -36,18 +36,13 @@ store.watch(() => store.state.conversationMessages, (newValue) => {
       message.date = "Le " + new Date(message.date).toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit', year: 'numeric'}) + " à " + new Date(message.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}).replace(':', 'h');
     }
   }
-
-  let lastMessage = document.querySelector('[ref="lastMessage"]');
-  if (lastMessage) {
-    lastMessage.scrollIntoView({behavior: "smooth", block: "end"});
-  }
 });
 
 const data = reactive({
   messages: messages,
 });
 
-let lastMessage = document.querySelector('[ref="lastMessage"]');
+let lastMessage = document.querySelector('[id="lastMessage"]');
 if (lastMessage) {
   lastMessage.scrollIntoView({behavior: "smooth", block: "end"});
 }
@@ -55,7 +50,7 @@ if (lastMessage) {
 
 <template>
   <div class="list">
-        <Message v-for="message in data.messages" :key="message.id" :ref="message.isLast ? 'lastMessage' : null" :message="message"/>
+        <Message v-for="message in data.messages" :key="message.id" :id="message.isLast ? 'lastMessage' : null" :message="message"/>
   </div>
 </template>
 

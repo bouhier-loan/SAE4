@@ -263,6 +263,14 @@ async function getConversationMessages(req, res) {
         return messageWithoutIdAndV;
     });
 
+    /* Mark the messages as read */
+    messages.forEach(async message => {
+        if (!message.seenBy.includes(req.body.userId)) {
+            message.seenBy.push(req.body.userId);
+            await message.save();
+        }
+    })
+
     /* Send the response */
     return res.status(200).json(
         {
@@ -296,6 +304,41 @@ async function getParticipants(req, res) {
     );
 }
 
+/* Conversation message fetch (only sends messages that the user has not seen)
+    * @param {Object} req - The request object
+    * @param {String} req.params.id - The conversation's id
+    * @param {Object} res - The response object
+    * @return {Object} - The response object
+ */
+async function getUnreadMessages(req, res) {
+    /* Get the conversation's messages */
+    let messages = await Message.find({conversationId: req.params.id});
+
+    /* Remove _id and __v from the messages */
+    let messagesWithoutIdAndV = messages.map(message => {
+        let { _id, __v, ...messageWithoutIdAndV } = message.toJSON();
+        return messageWithoutIdAndV;
+    });
+
+    /* Filter the messages */
+    messages = messages.filter(message => !message.seenBy.includes(req.body.userId));
+
+    /* Mark the messages as read */
+    messages.forEach(async message => {
+        if (!message.seenBy.includes(req.body.userId)) {
+            message.seenBy.push(req.body.userId);
+            await message.save();
+        }
+    })
+
+    /* Send the response */
+    return res.status(200).json(
+        {
+            messages: messagesWithoutIdAndV,
+        }
+    );
+}
+
 module.exports = {
     createConversation,
     updateConversation,
@@ -305,5 +348,6 @@ module.exports = {
     addParticipant,
     removeParticipant,
     getConversationMessages,
-    getParticipants
+    getParticipants,
+    getUnreadMessages
 }
