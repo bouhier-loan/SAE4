@@ -37,6 +37,8 @@ fetch('http://localhost:8000/conversations', {
 
 function selectConversation(conversationId) {
   store.commit('updateConversationId', conversationId);
+  store.commit('updateMessages', []);
+  store.commit('updateFetchMessages', true);
   router.push('/');
 }
 

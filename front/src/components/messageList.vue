@@ -1,6 +1,6 @@
 <script setup>
 import store from "@/store/store.js";
-import {onMounted, reactive} from "vue";
+import {reactive} from "vue";
 import Message from "@/components/message.vue";
 
 const messages = store.state.conversationMessages;
@@ -19,10 +19,7 @@ store.watch(() => store.state.conversationMessages, (newValue) => {
     }
   }
 
-  /* Add a value `isLast` to the last message */
-  if (newValue.length > 0) {
-    newValue[newValue.length - 1].isLast = true;
-  }
+  let wasEmpty = data.messages.length === 0;
 
   data.messages = newValue;
 
@@ -36,21 +33,24 @@ store.watch(() => store.state.conversationMessages, (newValue) => {
       message.date = "Le " + new Date(message.date).toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit', year: 'numeric'}) + " à " + new Date(message.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}).replace(':', 'h');
     }
   }
+
+  if (wasEmpty) {
+    let lastMessage = document.querySelector('[id="lastMessage"]');
+    if (lastMessage) {
+      lastMessage.scrollIntoView({behavior: "smooth", block: "end"});
+    }
+  }
 });
 
 const data = reactive({
   messages: messages,
 });
-
-let lastMessage = document.querySelector('[id="lastMessage"]');
-if (lastMessage) {
-  lastMessage.scrollIntoView({behavior: "smooth", block: "end"});
-}
 </script>
 
 <template>
   <div class="list">
-        <Message v-for="message in data.messages" :key="message.id" :id="message.isLast ? 'lastMessage' : null" :message="message"/>
+        <Message v-for="message in data.messages" :key="message.id" :message="message"/>
+        <span id="lastMessage"/>
   </div>
 </template>
 

@@ -58,7 +58,11 @@ async function getMessages() {
 
           messages.push(message);
         });
-        store.commit('updateCache', messages);
+        if (!fetch_messages) {
+          store.commit('updateMessages', messages);
+        } else {
+          store.commit('updateMessages', store.state.conversationMessages.concat(messages));
+        }
       })
       .catch(error => {
         console.error('Error:', error);
@@ -69,7 +73,7 @@ async function getMessages() {
 
 /* Call getMessages() once and then every second in the background */
 getMessages();
-setInterval(getMessages, 10000);
+setInterval(getMessages, 1500);
 </script>
 
 <template>

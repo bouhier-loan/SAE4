@@ -135,7 +135,7 @@ async function getUnreadMessages(req, res) {
     }
 
     let response;
-    response = await axios.get(CONVERSATION_BASE_URL + '/' + req.params.id + '/messages/fetch', {params: {userId: req.userId}})
+    response = await axios.get(CONVERSATION_BASE_URL + '/' + req.params.id + '/messages/fetch/' + req.userId)
     status.messages = response.data.messages;
 
     return res.status(200).json(status);

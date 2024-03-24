@@ -20,8 +20,7 @@ router.get(
 );
 
 router.get(
-    '/:id/messages/fetch',
-    body('userId').isString().notEmpty().withMessage('User id must be a string'),
+    '/:id/messages/fetch/:userId',
     async (req, res) => { await conversationController.getUnreadMessages(req, res) }
 );
 

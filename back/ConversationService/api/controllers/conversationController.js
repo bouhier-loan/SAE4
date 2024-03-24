@@ -314,22 +314,22 @@ async function getUnreadMessages(req, res) {
     /* Get the conversation's messages */
     let messages = await Message.find({conversationId: req.params.id});
 
+    /* Filter the messages */
+    messages = messages.filter(message => !message.seenBy.includes(req.params.userId));
+
+    /* Mark the messages as read */
+    messages.forEach(async message => {
+        if (!message.seenBy.includes(req.params.userId)) {
+            message.seenBy.push(req.params.userId);
+            await message.save();
+        }
+    })
+
     /* Remove _id and __v from the messages */
     let messagesWithoutIdAndV = messages.map(message => {
         let { _id, __v, ...messageWithoutIdAndV } = message.toJSON();
         return messageWithoutIdAndV;
     });
-
-    /* Filter the messages */
-    messages = messages.filter(message => !message.seenBy.includes(req.body.userId));
-
-    /* Mark the messages as read */
-    messages.forEach(async message => {
-        if (!message.seenBy.includes(req.body.userId)) {
-            message.seenBy.push(req.body.userId);
-            await message.save();
-        }
-    })
 
     /* Send the response */
     return res.status(200).json(

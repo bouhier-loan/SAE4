@@ -11,7 +11,7 @@ export default createStore({
         showCreateConversationModal: false
     },
     mutations: {
-        updateCache(state, payload) {
+        updateMessages(state, payload) {
             state.conversationMessages= payload;
         },
         updateConversationId(state, payload) {
