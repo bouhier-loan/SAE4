@@ -2,7 +2,6 @@ import {createStore} from 'vuex';
 
 export default createStore({
     state: {
-        conversationMessages: {},
         conversations: [],
         currentConversation: null,
         users: [],
@@ -11,9 +10,6 @@ export default createStore({
         showCreateConversationModal: false
     },
     mutations: {
-        updateMessages(state, payload) {
-            state.conversationMessages= payload;
-        },
         updateConversationId(state, payload) {
             state.currentConversation = payload;
         },

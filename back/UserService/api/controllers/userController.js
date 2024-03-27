@@ -134,51 +134,29 @@ async function checkPassword(req, res) {
  */
 async function checkToken(req, res) {
     const data = matchedData(req)
-    console.log('----')
-    console.log('Token: ' + data.token)
-    console.log('User id: ' + req.params.id)
 
     /* Check if the token exists */
-    const accessToken = await AccessToken.findOne({token: data.token, userId: req.params.id});
-    if (!accessToken) {
-        return res.status(401).json(
-            {message: 'Invalid token'}
+    const token = await AccessToken.findOne({token: data.token, userId: req.params.id});
+    if (!token) {
+        return res.status(404).json(
+            {message: 'Token not found'}
         );
     }
-    console.log('Access token' + accessToken)
 
-    /* Check if the token is expired */
-    if (accessToken.expires < Date.now()) {
-        await AccessToken.deleteOne({token: data.token, userId: req.params.id});
-        console.log('Token expired')
-        return res.status(401).json(
+    /* Check if the token is still valid */
+    if (token.expires < new Date()) {
+        await AccessToken.deleteOne({token: data.token});
+        return res.status(400).json(
             {message: 'Token expired'}
         );
     }
 
-    await AccessToken.deleteMany({userId:req.params.id});
+    /* Refresh the token */
+    token.expires = dateShift(new Date(), process.env.TOKEN_VALIDITY);
+    await token.save();
 
-    /* Create a new token */
-    const token = uuidv4();
-    const expires = dateShift(new Date(),process.env.TOKEN_VALIDITY);
-
-    /* Create the token */
-    const newAccessToken = new AccessToken({
-        token: token,
-        userId: req.params.id,
-        expires: expires
-    });
-    console.log('New access token' + newAccessToken)
-
-    /* Save the token */
-    await newAccessToken.save();
-
-    /* Send the response back */
     return res.status(200).json(
-        {
-            message: 'Token valid',
-            newToken: token
-        }
+        {message: 'Token valid'}
     );
 }
 

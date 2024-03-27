@@ -1,7 +1,9 @@
 <script setup>
 import {defineProps} from "vue";
+import axios from "axios";
+import store from "@/store/store.js";
 
-defineProps({
+const props = defineProps({
   user: {
     type: {
       id: Number,
@@ -20,6 +22,18 @@ defineProps({
     required: true,
   },
 });
+
+function kickParticipant() {
+  axios.delete(`http://localhost:8000/conversations/${store.state.currentConversation}/participants/${props.user.id}`, {
+    headers: {
+      Authorization: localStorage.getItem("userId") + " " + localStorage.getItem('token'),
+    },
+  }).then(() => {
+    console.log('Participant kicked');
+  }).catch((error) => {
+    console.error(error);
+  });
+}
 </script>
 
 <template>
@@ -32,7 +46,7 @@ defineProps({
       </div>
     </div>
     <img v-if="participantIsOwner" alt="Conversation owner" class="owner" src="/icons/shield-check.svg"/>
-    <span v-else-if="userIsOwner" class="kick" @click="console.log('TODO!')">✗</span>
+    <span v-else-if="userIsOwner" class="kick" @click="kickParticipant">✗</span>
   </div>
 </template>
 

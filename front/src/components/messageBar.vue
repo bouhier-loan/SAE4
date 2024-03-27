@@ -39,8 +39,6 @@ async function sendMessage() {
       localStorage.removeItem("token");
       router.push('/login');
     }
-    localStorage.setItem("token", data.token);
-
     // Clear the input
     document.querySelector(".messageBar textarea").value = "";
     data.message = "";

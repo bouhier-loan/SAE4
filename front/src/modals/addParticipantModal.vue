@@ -28,11 +28,6 @@ function addParticipant(user) {
     body: JSON.stringify({
       participantId: user.id,
     }),
-  }).then(response => { return response.json(); })
-    .then(data => {
-      localStorage.setItem("token", data.token);
-
-      console.log(data.message);
   })
 
   /* Close the modal */

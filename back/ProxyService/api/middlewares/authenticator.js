@@ -18,7 +18,6 @@ async function authenticator(req, res, next) {
             );
         }
 
-        req.newToken = response.data.newToken;
         req.userId = user;
         next();
 

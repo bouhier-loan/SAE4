@@ -54,12 +54,7 @@ function createConversation() {
       name: name.value,
       participants: listParticipants,
     }),
-  }).then(response => { return response.json(); })
-    .then(data => {
-      localStorage.setItem("token", data.token);
-      console.log(data.message);
-    });
-
+  })
   /* Close the modal */
   store.commit("showCreateConversationModal", false);
 }
