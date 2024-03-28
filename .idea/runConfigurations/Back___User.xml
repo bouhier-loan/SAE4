@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Back - User" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/back/UserService/server.js" working-dir="$PROJECT_DIR$/back/UserService">
+  <configuration default="false" name="Back - User" type="NodeJSConfigurationType" path-to-js-file="server.js" working-dir="$PROJECT_DIR$/back/UserService">
     <EXTENSION ID="com.jetbrains.nodejs.run.NodeStartBrowserRunConfigurationExtension">
       <browser url="http://localhost:3000/" />
     </EXTENSION>

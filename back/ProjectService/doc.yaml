@@ -1,0 +1,144 @@
+swagger: '2.0'
+info:
+  title: Project Service API
+  version: '1.0.0'
+host: localhost:3002
+basePath: /
+schemes:
+  - 'http'
+consumes:
+    - application/json
+produces:
+    - application/json
+paths:
+  /projects:
+    post:
+      summary: Create a new project
+      parameters:
+        - in: body
+          name: project
+          schema:
+            $ref: '#/definitions/Project'
+      responses:
+        201:
+          description: Project created
+    get:
+      summary: Get all projects
+      parameters:
+        - in: query
+          name: projectId
+          type: string
+          description: The id of the project
+      responses:
+        200:
+          description: An array of projects
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Project'
+    put:
+      summary: Update a project
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          type: string
+        - in: body
+          name: project
+          schema:
+            $ref: '#/definitions/Project'
+      responses:
+        200:
+          description: Project updated
+    delete:
+      summary: Delete a project
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          type: string
+      responses:
+        204:
+          description: Project deleted
+  /tasks:
+    post:
+      summary: Create a new task
+      parameters:
+        - in: body
+          name: task
+          schema:
+            $ref: '#/definitions/Task'
+      responses:
+        201:
+          description: Task created
+    get:
+      summary: Get all tasks
+      parameters:
+        - in: query
+          name: taskId
+          type: string
+          description: The id of the task
+      responses:
+        200:
+          description: An array of tasks
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Task'
+    put:
+      summary: Update a task
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          type: string
+        - in: body
+          name: task
+          schema:
+            $ref: '#/definitions/Task'
+      responses:
+        200:
+          description: Task updated
+    delete:
+      summary: Delete a task
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          type: string
+      responses:
+        204:
+          description: Task deleted
+definitions:
+  Project:
+    type: object
+    properties:
+      name:
+        type: string
+      conversation:
+        type: string
+      participants:
+        type: array
+        items:
+          type: string
+      tasks:
+        type: array
+        items:
+          $ref: '#/definitions/Task'
+  Task:
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      assignees:
+        type: array
+        items:
+          type: string
+      deadline:
+        type: string
+        format: date-time
+      priority:
+        type: string
+        enum: [Low, Medium, High]

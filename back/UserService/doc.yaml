@@ -1,0 +1,153 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: 'User Service API'
+  description: 'API for managing users and tokens'
+host: 'localhost:3002'
+schemes:
+  - 'http'
+consumes:
+  - 'application/json'
+produces:
+  - 'application/json'
+paths:
+  /users:
+    post:
+      summary: 'Create a new user'
+      operationId: 'createUser'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'User object that needs to be added'
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '201':
+          description: 'User created'
+        '400':
+          description: 'Invalid input'
+    get:
+      summary: 'Get all users'
+      operationId: 'getAllUsers'
+      description: 'Returns all users'
+      responses:
+        '200':
+          description: 'successful operation'
+          schema:
+            type: 'array'
+            items:
+              $ref: '#/definitions/User'
+        '400':
+          description: 'Invalid status value'
+  /users/{userId}:
+    put:
+      summary: 'Update an existing user'
+      description: 'Change the display name of a user'
+      operationId: 'updateUser'
+      parameters:
+        - in: 'path'
+          name: 'userId'
+          description: 'ID of user'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'User object that needs to be updated'
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: 'User updated'
+        '400':
+          description: 'Invalid ID supplied'
+        '404':
+          description: 'User not found'
+  /users/{userId}/token:
+    post:
+      summary: 'Create a new token for a user'
+      operationId: 'createToken'
+      parameters:
+        - in: 'path'
+          name: 'userId'
+          description: 'ID of user'
+          required: true
+          type: 'string'
+      responses:
+        '201':
+          description: 'Token created'
+        '400':
+          description: 'Invalid ID supplied'
+        '404':
+          description: 'User not found'
+  /users/{userId}/token/check:
+    post:
+      summary: 'Check if a token is valid'
+      operationId: 'checkToken'
+      parameters:
+        - in: 'path'
+          name: 'userId'
+          description: 'ID of user'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'Token object that needs to be checked'
+          required: true
+          schema:
+            $ref: '#/definitions/Token'
+      responses:
+        '200':
+          description: 'Token valid'
+        '400':
+          description: 'Invalid ID supplied'
+        '404':
+          description: 'Token not found'
+  /users/{userId}/password:
+    post:
+      summary: 'Check if a password is valid'
+      operationId: 'checkPassword'
+      parameters:
+        - in: 'path'
+          name: 'userId'
+          description: 'ID of user'
+          required: true
+          type: 'string'
+        - in: 'body'
+          name: 'body'
+          description: 'Password object that needs to be checked'
+          required: true
+          schema:
+            $ref: '#/definitions/Password'
+      responses:
+        '200':
+          description: 'Password valid'
+        '400':
+          description: 'Invalid ID supplied'
+        '404':
+          description: 'User not found'
+definitions:
+  User:
+    type: 'object'
+    properties:
+      id:
+        type: 'string'
+      username:
+        type: 'string'
+      displayName:
+        type: 'string'
+      password:
+        type: 'string'
+      color:
+        type: 'string'
+  Token:
+    type: 'object'
+    properties:
+      token:
+        type: 'string'
+  Password:
+    type: 'object'
+    properties:
+      password:
+        type: 'string'
