@@ -72,8 +72,27 @@ async function updateConversation(req, res) {
         );
     }
 
+    /* Create a new message */
+    let message = new Message({
+        id: uuidv4(),
+        conversationId: conversation.id,
+        senderId: 'system',
+        content: {
+            message: `CONVERSATION_UPDATE`,
+            new_name: data.name,
+            old_name: conversation.name,
+        },
+        seenBy: [],
+    });
+
+    /* Save the message */
+    await message.save();
+
     /* Modify the conversation */
     conversation.name = data.name;
+    /* Update the conversation's lastUpdated field */
+
+    conversation.lastUpdated = new Date();
     await conversation.save();
 
     /* Remove _id and __v from the conversation */
@@ -197,7 +216,25 @@ async function addParticipant(req, res) {
 
     /* Add the participant to the conversation */
     conversation.participants.push(data.participantId);
+
+    /* Update the conversation's lastUpdated field */
+    conversation.lastUpdated = new Date();
     await conversation.save();
+
+    /* Create a new message */
+    let message = new Message({
+        id: uuidv4(),
+        conversationId: conversation.id,
+        senderId: 'system',
+        content: {
+            message: `PARTICIPANT_ADDED`,
+            participantId: data.participantId,
+        },
+        seenBy: [],
+    });
+
+    /* Save the message */
+    await message.save();
 
     /* Remove _id and __v from the conversation */
     let { _id, __v, ...conversationWithoutIdAndV } = conversation.toJSON();
@@ -233,7 +270,25 @@ async function removeParticipant(req, res) {
 
     /* Remove the participant from the conversation */
     conversation.participants = conversation.participants.filter(participant => participant !== data.participantId);
+
+    /* Update the conversation's lastUpdated field */
+    conversation.lastUpdated = new Date();
     await conversation.save();
+
+    /* Create a new message */
+    let message = new Message({
+        id: uuidv4(),
+        conversationId: conversation.id,
+        senderId: 'system',
+        content: {
+            message: `PARTICIPANT_REMOVED`,
+            participantId: data.participantId,
+        },
+        seenBy: [],
+    });
+
+    /* Save the message */
+    await message.save();
 
     /* Remove _id and __v from the conversation */
     let { _id, __v, ...conversationWithoutIdAndV } = conversation.toJSON();

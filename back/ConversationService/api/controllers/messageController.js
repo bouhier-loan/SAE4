@@ -116,8 +116,12 @@ async function deleteMessage(req, res) {
             }
         );
     }
-    /* Delete the message */
-    await message.deleteOne();
+
+    /* Replace the message's content with a deletion message */
+    message.content = {
+        message: 'MESSAGE_DELETED',
+        senderId: message.senderId,
+    }
 
     /* Send the response */
     return res.status(200).json(

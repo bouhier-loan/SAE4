@@ -22,7 +22,7 @@ const data = reactive({
 </script>
 
 <template>
-  <div class="message" :class="{isFollowing: data.message.isFollowing, isNotified: data.message.isNotified}">
+  <div class="message" :class="{isFollowing: data.message.isFollowing, isNotified: data.message.isNotified}" v-if="data.message.senderId === 'system'">
     <div v-if="!data.message.isFollowing" class="header">
       <div class="userInfos">
         <div class="color" :style="{backgroundColor: '#' + data.message.senderColor}"></div>
@@ -35,6 +35,9 @@ const data = reactive({
       <span class="text" v-html="data.message.content.message"></span>
       <span v-if="data.message.modified" class="modified">(modified)</span>
     </div>
+  </div>
+  <div class="system-message" v-else>
+
   </div>
 </template>
 

@@ -55,7 +55,7 @@ async function getMessages() {
           return;
         }
         responseData.messages.forEach(message => {
-          message.senderUsername = store.state.users.find(user => user.id === message.senderId).username;
+          message.senderUsername = message.senderId === 'system' ? "system" : store.state.users.find(user => user.id === message.senderId).username;
           message.senderColor = store.state.users.find(user => user.id === message.senderId).color;
           message.isNotified = message.content.message.match(/@(\w+)/g)?.includes("@" + localStorage.getItem("username"));
 
