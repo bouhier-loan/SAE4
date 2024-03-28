@@ -13,7 +13,23 @@ const messageSchema = new mongoose.Schema({
         message : {
             type: String,
             required: true
-        }
+        },
+        senderId: {
+            type: String,
+            required: false
+        },
+        participantId: {
+            type: String,
+            required: false
+        },
+        old_name: {
+            type: String,
+            required: false
+        },
+        new_name: {
+            type: String,
+            required: false
+        },
         // Attachments, etc.
     },
     conversationId: {

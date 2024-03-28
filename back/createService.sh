@@ -61,8 +61,8 @@ npm i dotenv
 echo "Creating server.js template file"
 echo "Default app port is set to 8080"
 appPort=8080
-echo "APP_PORT=$appPort" > .env-template-template-template
-cp .env-template-template-template .env-template-template-template.template
+echo "APP_PORT=$appPort" > .env-template
+cp .env-template .env-template.template
 
 echo "\"use strict\"
 import express from 'express';

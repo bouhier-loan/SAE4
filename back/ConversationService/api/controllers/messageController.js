@@ -122,6 +122,8 @@ async function deleteMessage(req, res) {
         message: 'MESSAGE_DELETED',
         senderId: message.senderId,
     }
+    message.senderId = 'system';
+    message.save()
 
     /* Send the response */
     return res.status(200).json(

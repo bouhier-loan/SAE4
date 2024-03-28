@@ -1,5 +1,8 @@
 <script setup>
 import {defineProps, reactive} from 'vue'
+import ParticipantAdded from "@/components/system/participantAdded.vue";
+import ParticipantRemoved from "@/components/system/participantRemoved.vue";
+import MessageDeleted from "@/components/system/messageDeleted.vue";
 
 const props = defineProps({
   message: {
@@ -37,7 +40,12 @@ const data = reactive({
     </div>
   </div>
   <div class="system-message" v-else>
-
+    <participant-added :message="data.message" v-if="data.message.content === 'PARTICIPANT_ADDED'" :class="{isNotified: data.message.isNotified}"/>
+    <participant-removed :message="data.message" v-else-if="data.message.content === 'PARTICIPANT_REMOVED'" :class="{isNotified: data.message.isNotified}"/>
+    <message-deleted :message="data.message" v-else-if="data.message.content === 'MESSAGE_DELETED'" :class="{isNotified: data.message.isNotified}"/>
+    <div v-else>
+      ERROR: Unknown system message type '{{ data.message.content }}'
+    </div>
   </div>
 </template>
 
@@ -50,12 +58,12 @@ const data = reactive({
   margin-top: 0;
 }
 
-.message.isNotified {
+.message.isNotified, .system-message .isNotified {
   background-color: rgba(159, 219, 239, 10%);
   border-left: 4px solid var(--cyan-40);
 }
 
-.message.isNotified:hover {
+.message.isNotified:hover, .system-message .isNotified:hover {
   background-color: rgba(65, 173, 209, 10%);
   border-left: 4px solid var(--cyan-40);
 }
