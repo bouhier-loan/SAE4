@@ -25,7 +25,8 @@ const data = reactive({
 </script>
 
 <template>
-  <div class="message" :class="{isFollowing: data.message.isFollowing, isNotified: data.message.isNotified}" v-if="data.message.senderId === 'system'">
+  <div v-if="data.message.senderId !== 'system'" :class="{isFollowing: data.message.isFollowing, isNotified: data.message.isNotified}"
+       class="message">
     <div v-if="!data.message.isFollowing" class="header">
       <div class="userInfos">
         <div class="color" :style="{backgroundColor: '#' + data.message.senderColor}"></div>
@@ -40,9 +41,12 @@ const data = reactive({
     </div>
   </div>
   <div class="system-message" v-else>
-    <participant-added :message="data.message" v-if="data.message.content === 'PARTICIPANT_ADDED'" :class="{isNotified: data.message.isNotified}"/>
-    <participant-removed :message="data.message" v-else-if="data.message.content === 'PARTICIPANT_REMOVED'" :class="{isNotified: data.message.isNotified}"/>
-    <message-deleted :message="data.message" v-else-if="data.message.content === 'MESSAGE_DELETED'" :class="{isNotified: data.message.isNotified}"/>
+    <participant-added v-if="data.message.content.message=== 'PARTICIPANT_ADDED'" :class="{isNotified: data.message.isNotified}"
+                       :message="data.message"/>
+    <participant-removed v-else-if="data.message.content.message === 'PARTICIPANT_REMOVED'" :class="{isNotified: data.message.isNotified}"
+                         :message="data.message"/>
+    <message-deleted v-else-if="data.message.content.message === 'MESSAGE_DELETED'" :class="{isNotified: data.message.isNotified}"
+                     :message="data.message"/>
     <div v-else>
       ERROR: Unknown system message type '{{ data.message.content }}'
     </div>
@@ -50,35 +54,18 @@ const data = reactive({
 </template>
 
 <style scoped>
-.message:hover {
-  background-color: var(--white-90);
-}
-
-.message.isFollowing {
-  margin-top: 0;
-}
-
-.message.isNotified, .system-message .isNotified {
-  background-color: rgba(159, 219, 239, 10%);
-  border-left: 4px solid var(--cyan-40);
-}
-
-.message.isNotified:hover, .system-message .isNotified:hover {
-  background-color: rgba(65, 173, 209, 10%);
-  border-left: 4px solid var(--cyan-40);
-}
-
 .message {
   display: flex;
   flex-direction: column;
   gap: 0.1em;
   margin-top: 1em;
   padding: 0 3rem;
+  --show-date: none;
 
   .header {
     display: flex;
     flex-direction: row;
-    align-items: end;
+    align-items: center;
     gap: 0.5em;
 
     .userInfos {
@@ -102,12 +89,11 @@ const data = reactive({
       }
     }
 
-
-
     .date {
       font-size: 0.7rem;
       color: var(--white-50);
       margin: 0;
+      display: var(--show-date);
     }
   }
 
@@ -130,5 +116,24 @@ const data = reactive({
       margin: 0;
     }
   }
+}
+
+.message:hover {
+  background-color: var(--white-90);
+  --show-date: block;
+}
+
+.message.isFollowing {
+  margin-top: 0;
+}
+
+.message.isNotified, .system-message .isNotified {
+  background-color: rgba(159, 219, 239, 10%);
+  border-left: 4px solid var(--cyan-40);
+}
+
+.message.isNotified:hover, .system-message .isNotified:hover {
+  background-color: rgba(65, 173, 209, 10%);
+  border-left: 4px solid var(--cyan-40);
 }
 </style>

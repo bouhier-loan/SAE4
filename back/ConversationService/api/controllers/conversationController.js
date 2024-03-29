@@ -269,7 +269,7 @@ async function removeParticipant(req, res) {
     }
 
     /* Remove the participant from the conversation */
-    conversation.participants = conversation.participants.filter(participant => participant !== data.participantId);
+    conversation.participants = conversation.participants.filter(participant => participant !== req.params.participantId);
 
     /* Update the conversation's lastUpdated field */
     conversation.lastUpdated = new Date();
@@ -282,7 +282,7 @@ async function removeParticipant(req, res) {
         senderId: 'system',
         content: {
             message: `PARTICIPANT_REMOVED`,
-            participantId: data.participantId,
+            participantId: req.params.participantId,
         },
         seenBy: [],
     });

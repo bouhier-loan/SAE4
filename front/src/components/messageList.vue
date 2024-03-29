@@ -28,6 +28,7 @@ async function getMessages() {
   if (conversationId !== currentConversation) {
     data.messages = [];
     currentConversation = conversationId;
+    console.log("Conversation changed")
   }
 
   // If the user is not logged in or not in the route /dev, stop the function
@@ -55,9 +56,14 @@ async function getMessages() {
           return;
         }
         responseData.messages.forEach(message => {
-          message.senderUsername = message.senderId === 'system' ? "system" : store.state.users.find(user => user.id === message.senderId).username;
-          message.senderColor = store.state.users.find(user => user.id === message.senderId).color;
-          message.isNotified = message.content.message.match(/@(\w+)/g)?.includes("@" + localStorage.getItem("username"));
+
+          if (message.senderId === "system") {
+            message.senderUsername = "system";
+          } else {
+            message.senderUsername = store.state.users.find(user => user.id === message.senderId).username;
+            message.senderColor = store.state.users.find(user => user.id === message.senderId).color;
+            message.isNotified = message.content.message.match(/@(\w+)/g)?.includes("@" + localStorage.getItem("username"));
+          }
 
           /* Add a value `isFollowing` to each message */
           /* This value is true if the message is sent by the same user as the previous one and if the time between the two messages is less than 5 minute */
@@ -91,6 +97,7 @@ async function getMessages() {
         if (firstMessage) {
           data.messages = messages;
           scrollState = 1;
+          console.log("First message")
         } else {
           data.messages = data.messages.concat(messages);
         }

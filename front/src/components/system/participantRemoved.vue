@@ -13,13 +13,13 @@ const props = defineProps({
 const data = reactive({
   message: props.message
 });
-
-data.message.content.username = store.state.participants.find(participant => participant.id === data.message.content.participantId).username;
+console.log(data.message);
+data.message.content.username = store.state.users.find(user => user.id === data.message.content.participantId).username;
 </script>
 
 <template>
 <span class="system-message-participant-removed">
-  <span class="user">@{{ message.content.username }}</span>
+  <span class="user">@{{ data.message.content.username }}</span>
   <span class="text"> a quitté la conversation !</span>
 </span>
 </template>
