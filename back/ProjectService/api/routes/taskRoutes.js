@@ -1,6 +1,6 @@
 const express = require('express');
 const {body, query} = require("express-validator");
-const taskController = require('../controllers/TaskController');
+const taskController = require('../controllers/taskController');
 const Task = require('../models/task');
 
 const router = express.Router();

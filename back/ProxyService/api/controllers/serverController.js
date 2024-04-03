@@ -16,7 +16,7 @@ async function fetchServerStatus(req, res) {
     const status = {
         conversations: [],
         projects: [],
-        users: []
+        users: [],
     }
 
     const userData = {
