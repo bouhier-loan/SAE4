@@ -3,6 +3,7 @@ import {defineProps, reactive} from 'vue'
 import ParticipantAdded from "@/components/system/participantAdded.vue";
 import ParticipantRemoved from "@/components/system/participantRemoved.vue";
 import MessageDeleted from "@/components/system/messageDeleted.vue";
+import ConversationUpdated from "@/components/system/conversationUpdated.vue";
 
 const props = defineProps({
   message: {
@@ -47,6 +48,8 @@ const data = reactive({
                          :message="data.message"/>
     <message-deleted v-else-if="data.message.content.message === 'MESSAGE_DELETED'" :class="{isNotified: data.message.isNotified}"
                      :message="data.message"/>
+    <ConversationUpdated message="data.message" v-else-if="data.message.content.message === 'CONVERSATION_UPDATED'" :class="{isNotified: data.message.isNotified}"
+                         :message="data.message"/>
     <div v-else>
       ERROR: Unknown system message type '{{ data.message.content }}'
     </div>

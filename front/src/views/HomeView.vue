@@ -1,11 +1,41 @@
 <script setup>
 import router from "@/router/index.js";
 import ConversationVue from "@/views/ConversationVue.vue";
+import axios from "axios";
 
 if (!localStorage.getItem('token')) {
   clearInterval("getMessages")
   router.push('/login');
 }
+
+let userId = localStorage.getItem('userId');
+/* Fetch the server status */
+let first_fetch = true
+
+function fetchServerStatus() {
+  axios.get('http://localhost:8000/status', {
+    params: {fetch: first_fetch},
+    headers: {
+      Authorization: `${localStorage.getItem('userId')} ${localStorage.getItem('token')}`
+    }
+  })
+  .then(response => {
+    if (first_fetch) {
+      first_fetch = false
+    }
+
+    if (response.status === 401) {
+      clearInterval("getMessages")
+      clearInterval("fetchServerStatus")
+      router.push('/login');
+    }
+
+
+  })
+}
+
+fetchServerStatus()
+setInterval(fetchServerStatus, 1000)
 </script>
 
 <template>

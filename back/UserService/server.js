@@ -21,4 +21,4 @@ app.use('/users',router);
 app.use('/doc', swaggerUi.serve, swaggerUi.setup(YAML.load('doc.yaml')));
 
 app.listen(process.env.USER_SERVICE_PORT, () => console.log(`Service running on port ${process.env.USER_SERVICE_PORT}`));
-console.log('INFO | user-service: Started...');
+console.log('Started...');
