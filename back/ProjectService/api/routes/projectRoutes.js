@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.post('/projects',
     body('name').isString().isLength({min: 1}),
-    body('conversation').isString().isLength({min: 1}),
     body('participants').isArray().isLength({min: 1}),
     projectController.createProject
 );

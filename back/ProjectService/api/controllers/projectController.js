@@ -12,7 +12,6 @@ async function createProject(req, res) {
         const newProject = new Project({
             id: uuidv4(undefined, undefined, undefined),
             name: data.name,
-            conversation: data.conversation,
             participants: data.participants,
             tasks: [],
         });

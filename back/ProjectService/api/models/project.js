@@ -6,10 +6,6 @@ const ProjectSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    conversation: {
-        type: String,
-        required: true,
-    },
     participants: {
         type: [String],
         required: true,
