@@ -1,5 +1,4 @@
 back/ProxyService/.env
 back/UserService/.env
 back/ConversationService/.env
-back/ProjectService/.env
 front/.env
