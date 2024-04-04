@@ -45,7 +45,7 @@ async function fetchServerStatus(req, res) {
     });
 
     /* Fetch server status */
-    if (data.fetch) {
+    if (req.query.fetch === 'true') {
         for (const conversation of userData.conversations) {
             /* Fetch all unread messages */
             response = await axios.get(CONVERSATION_BASE_URL + '/' + conversation.id + '/messages/fetch/' + req.userId)

@@ -33,7 +33,7 @@ const data = reactive({
         <div class="color" :style="{backgroundColor: '#' + data.message.senderColor}"></div>
         <span class="user">{{ data.message.senderUsername }}</span>
       </div>
-      <span class="date">{{ data.message.date.toString() }}</span>
+      <span class="date">{{ data.message.displayDate.toString() }}</span>
     </div>
 
     <div class="content">

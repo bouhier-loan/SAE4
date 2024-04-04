@@ -10,7 +10,7 @@ let data = reactive({
 });
 
 function selectConversation(conversationId) {
-  store.commit('updateConversationId', conversationId);
+  store.commit('updateCurrentConversation', conversationId);
   store.commit('updateFetchMessages', true);
   router.push('/');
 }
