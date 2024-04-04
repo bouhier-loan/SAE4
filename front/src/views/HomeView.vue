@@ -41,14 +41,17 @@ function fetchServerStatus() {
 
     // Conversations
     let conversations = response.data.conversations;
+    store.commit("updateCurrentConversation", conversations[0].id)
     conversations.forEach(conversation => {
       store.commit("updateConversation", conversation);
     })
   })
+
+  store.commit("updateView", true);
 }
 
 fetchServerStatus()
-setInterval(fetchServerStatus, 100000)
+setInterval(fetchServerStatus, 1000)
 </script>
 
 <template>
