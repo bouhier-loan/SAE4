@@ -2,6 +2,7 @@
 import router from "@/router/index.js";
 import ConversationVue from "@/views/ConversationVue.vue";
 import axios from "axios";
+import store from "@/store/store.js";
 
 if (!localStorage.getItem('token')) {
   clearInterval("getMessages")
@@ -14,7 +15,7 @@ let first_fetch = true
 
 function fetchServerStatus() {
   axios.get('http://localhost:8000/status', {
-    params: {fetch: first_fetch},
+    params: {fetch: !first_fetch},
     headers: {
       Authorization: `${localStorage.getItem('userId')} ${localStorage.getItem('token')}`
     }
@@ -22,6 +23,8 @@ function fetchServerStatus() {
   .then(response => {
     if (first_fetch) {
       first_fetch = false
+      console.log("Server is up and running")
+      console.log(response.data)
     }
 
     if (response.status === 401) {
@@ -30,12 +33,22 @@ function fetchServerStatus() {
       router.push('/login');
     }
 
+    // Users
+    let users = response.data.users;
+    if (users !== store.state.users) {
+      store.commit("updateUsers", users);
+    }
 
+    // Conversations
+    let conversations = response.data.conversations;
+    conversations.forEach(conversation => {
+      store.commit("updateConversation", conversation);
+    })
   })
 }
 
 fetchServerStatus()
-setInterval(fetchServerStatus, 1000)
+setInterval(fetchServerStatus, 100000)
 </script>
 
 <template>

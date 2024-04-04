@@ -4,36 +4,10 @@ import {reactive} from "vue";
 import router from "@/router/index.js";
 import Conversation from "@/components/conversation.vue";
 
-let conversations;
+let conversations = store.state.conversations;
 let data = reactive({
   conversations: [],
 });
-
-function fetchConversations() {
-  fetch('http://localhost:8000/conversations', {
-    method: "GET",
-    headers: {
-      "Content-Type": "application",
-      "Authorization": localStorage.getItem("userId") + " " + localStorage.getItem('token'),
-    },
-  })
-      .then(response => {
-            return response.json();
-          }
-      )
-      .then(responseData => {
-        if (responseData.message === "Unauthorized") {
-          localStorage.removeItem("token");
-          router.push('/login');
-        }
-        conversations = responseData.conversations;
-        selectConversation(conversations[0].id);
-        store.commit('updateConversations', conversations);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-}
 
 function selectConversation(conversationId) {
   store.commit('updateConversationId', conversationId);
@@ -48,8 +22,9 @@ store.watch(() => store.state.conversations, (newValue) => {
   data.conversations = newValue;
 });
 
-fetchConversations();
-setInterval(fetchConversations, 10000)
+store.watch(() => store.state.currentConversation, () => {
+  data.conversations = store.state.conversations;
+});
 </script>
 
 <template>
