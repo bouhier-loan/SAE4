@@ -1,5 +1,5 @@
 <script setup>
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import router from "@/router/index.js";
 
 const data = reactive({
@@ -33,6 +33,13 @@ async function login() {
         }
     });
 }
+
+const activeClass = ref('');
+function activateButtonAnimation() {
+  activeClass.value = 'button-animate';
+  setTimeout(() => activeClass.value = '', 2000);
+}
+
 </script>
 
 <template>
@@ -52,8 +59,7 @@ async function login() {
           <img src="../../public/icons/lock-closed.svg" alt="Lock" class="input-icon" />
         </div>
 
-        <button type="submit" class="login-btn">Connexion</button>
-
+        <button :class="[activeClass]" @click="activateButtonAnimation" type="submit" class="login-btn">Login</button>
         <div class="register">
         <router-link to="/register" class="register-link">Créer un compte</router-link>
       </div>
@@ -133,7 +139,7 @@ h1 {
 }
 
 .login-btn:hover {
-  background-color: #1e8875;
+  background-color: #145000;
 }
 
 .register-link {
@@ -151,4 +157,26 @@ h1 {
   text-align: center;
   margin-top: 1rem;
 }
+
+.login-btn, {
+  position: relative;
+  overflow: hidden; /* Ensures the background only shows within the button bounds */
+  transition: background-color 0.4s; /* Smooth transition for color change */
+}
+
+.button-animate {
+  animation: sweep-color 0.5s ease forwards;
+}
+
+@keyframes sweep-color {
+  0% {
+    background-size: 0 100%;
+    background-image: linear-gradient(to right, #1e8875, #26a69a);
+  }
+  100% {
+    background-size: 100% 100%;
+    background-image: linear-gradient(to right, #1e8875, #26a69a);
+  }
+}
+
 </style>
