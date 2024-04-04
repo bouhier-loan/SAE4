@@ -56,7 +56,7 @@ async function fetchServerStatus(req, res) {
     } else {
         for (const conversation of userData.conversations) {
             /* Fetch all messages */
-            response = await axios.get(CONVERSATION_BASE_URL + '/' + conversation.id + '/messages', {params: {userId: userData.id}})
+            response = await axios.get(CONVERSATION_BASE_URL + '/' + conversation.id + '/messages', {params: {userId: req.userId}})
             status.conversations.find(c => c.id === conversation.id).messages = response.data.messages;
         }
 
