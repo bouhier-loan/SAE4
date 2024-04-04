@@ -29,7 +29,8 @@ function kickParticipant() {
       Authorization: localStorage.getItem("userId") + " " + localStorage.getItem('token'),
     },
   }).then(() => {
-    console.log('Participant kicked');
+    // Remove the participant from the list
+    store.commit("removeParticipant", props.user.id);
   }).catch((error) => {
     console.error(error);
   });

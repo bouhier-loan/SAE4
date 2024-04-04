@@ -10,26 +10,27 @@ let data = reactive({
   owner: null,
   userId: localStorage.getItem("userId"),
 });
+let conv = store.state.conversations.find(conversation => conversation.id === store.state.currentConversation);
 
 store.watch(() => store.state.currentConversation, (newValue) => {
-  store.state.conversations.forEach(conversation => {
-    if (conversation.id === newValue) {
-      let participantsIds = conversation.participants;
-      participants = store.state.users.filter(user => participantsIds.includes(user.id));
-      data.participants = participants;
-      data.owner = conversation.ownerId;
-    }
-  })
-});
-
-store.state.conversations.forEach(conversation => {
-  if (conversation.id === store.state.currentConversation) {
-    let participantsIds = conversation.participants;
+  conv = store.state.conversations.find(conversation => conversation.id === newValue);
+  if (conv) {
+    let participantsIds = conv.participants;
     participants = store.state.users.filter(user => participantsIds.includes(user.id));
     data.participants = participants;
-    data.owner = conversation.ownerId;
+    data.owner = conv.ownerId;
   }
-})
+});
+
+setInterval(() => {
+  let conv = store.state.conversations.find(conversation => conversation.id === store.state.currentConversation);
+  if (conv) {
+    let participantsIds = conv.participants;
+    participants = store.state.users.filter(user => participantsIds.includes(user.id));
+    data.participants = participants;
+    data.owner = conv.ownerId;
+  }
+}, 1000)
 
 function copyToClipboard(payload) {
   navigator.clipboard.writeText(payload)

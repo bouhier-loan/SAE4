@@ -20,7 +20,7 @@ function humanizeData(payload) {
 
     /* Add a value `isFollowing` to each message */
     /* This value is true if the message is sent by the same user as the previous one and if the time between the two messages is less than 5 minute */
-    let lastMessage = data.messages[data.messages.length - 1];
+    let lastMessage = data.messages[0];
     message.isFollowing = !!(lastMessage && lastMessage.senderId === message.senderId && new Date(message.date).getTime() - new Date(lastMessage.date).getTime() < 300000);
 
     /* Humanize the date */
@@ -45,6 +45,7 @@ function humanizeData(payload) {
     data.messages.unshift(message);
   });
 }
+
 // When the current conversation changes, update the messages
 store.watch(() => store.state.currentConversation, () => {
   data.messages = [];
@@ -52,18 +53,13 @@ store.watch(() => store.state.currentConversation, () => {
   humanizeData(messages);
 });
 
-// When the messages change, update the messages
-store.watch(() => store.state.updateView, () => {
-  if (store.state.updateView) {
-    let messages = store.state.conversations.find(conversation => conversation.id === store.state.currentConversation).messages;
-
-    // Only humanize the new messages
-    messages = messages.slice(data.messages.length);
-    humanizeData(messages);
-    console.log("updateView", store.state.updateView)
-    store.commit("updateView", false);
-  }
-});
+// Every second, update the messages
+setInterval(() => {
+  let messages = store.state.conversations.find(conversation => conversation.id === store.state.currentConversation).messages;
+  // Only add the new messages
+  messages = messages.slice(data.messages.length);
+  humanizeData(messages);
+}, 1000);
 
 </script>
 

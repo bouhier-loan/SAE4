@@ -5,7 +5,6 @@ export default createStore({
         conversations: [],
         currentConversation: null,
         users: [],
-        updateView: false,
         showAddParticipantModal: false,
         showCreateConversationModal: false
     },
@@ -29,14 +28,19 @@ export default createStore({
                 state.conversations.push(payload);
             }
         },
-        updateView(state, payload) {
-            state.updateView = payload;
-        },
         showAddParticipantModal(state, payload) {
             state.showAddParticipantModal = payload;
         },
         showCreateConversationModal(state, payload) {
             state.showCreateConversationModal = payload;
+        },
+        removeParticipant(state, payload) {
+            let conversation = state.conversations.find(conversation => conversation.id === state.currentConversation);
+            conversation.participants = conversation.participants.filter(participant => participant.id !== payload);
+        },
+        addParticipant(state, payload) {
+            let conversation = state.conversations.find(conversation => conversation.id === state.currentConversation);
+            conversation.participants.push(payload);
         }
     }
 })

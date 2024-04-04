@@ -46,8 +46,6 @@ function fetchServerStatus() {
       store.commit("updateConversation", conversation);
     })
   })
-
-  store.commit("updateView", true);
 }
 
 fetchServerStatus()

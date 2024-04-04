@@ -29,6 +29,7 @@ function addParticipant(user) {
       participantId: user.id,
     }),
   })
+  store.commit("addParticipant", user.id);
 
   /* Close the modal */
   store.commit("showAddParticipantModal", false);
